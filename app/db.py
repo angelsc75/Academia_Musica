@@ -12,5 +12,5 @@ engine = create_engine(os.environ['DATABASE_URL'], echo=False)
 Base.metadata.create_all(engine)
 
 # Create a session
-Session = sessionmaker(bind=engine)
-session = Session()
+SessionLocal = sessionmaker(bind=engine)
+# session = Session()
