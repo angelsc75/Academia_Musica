@@ -1,7 +1,6 @@
-from models import Level, Instrument
+from app.models import Level, Instrument
 from app.db import session
 
-# CRUD PARA NIVELES
 def create_level(instruments_id, level):
     new_level = Level(instruments_id=instruments_id, level=level)
     session.add(new_level)
