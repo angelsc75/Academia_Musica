@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, ForeignKey, DECIMAL, Date, Time, Enum, func, Boolean, select
+from sqlalchemy import create_engine, ForeignKey, DECIMAL, Date, Time, Enum, func, Boolean, select, Table, Column, Integer, String, Numeric, DateTime
 from sqlalchemy import and_
 from sqlalchemy.orm import relationship, sessionmaker, declarative_base, Mapped, mapped_column
 from typing import List
@@ -6,6 +6,10 @@ from datetime import date, time
 from dotenv import load_dotenv
 import pandas as pd
 import os
+
+from decimal import Decimal, InvalidOperation,  ROUND_HALF_UP
+
+
 
 Base = declarative_base()
 
@@ -233,6 +237,65 @@ def view_student_details(student_id):
     return output
 
 
+
+def calculate_student_fees(student_id):
+    student = session.get(Student, student_id)
+    if not student:
+        return "Alumno no encontrado."
+
+    inscriptions = session.query(Inscription).filter(Inscription.student_id == student_id).all()
+    if not inscriptions:
+        return "No se encontraron inscripciones para este alumno."
+
+    total_fee = Decimal('0.00')
+    pack_inscriptions = {}
+
+    # Agrupar inscripciones por pack
+    for inscription in inscriptions:
+        instrument = inscription.level.instrument
+        pack = session.query(Pack).join(PacksInstruments).filter(PacksInstruments.instrument_id == instrument.id).first()
+        
+        pack_id = pack.id if pack else None  # Instrumentos sin pack
+
+        if pack_id not in pack_inscriptions:
+            pack_inscriptions[pack_id] = []
+        pack_inscriptions[pack_id].append((instrument, pack))
+
+    # Debugging, imprimimos las inscripciones por pack
+    """
+    print("\n Inscripciones agrupadas por Pack:")
+    for pack_id, insc_list in pack_inscriptions.items():
+        print(f"Pack ID: {pack_id}")
+        for instrument, pack in insc_list:
+            print(f"  Instrument: {instrument.name}, Price: {instrument.price}")
+    """
+    # Calcula precio para cada pack
+    for pack_id, insc_list in pack_inscriptions.items():
+        insc_list.sort(key=lambda x: x[0].price, reverse=True)  # por precio descendente
+
+        for i, (instrument, pack) in enumerate(insc_list):
+            price = Decimal(instrument.price)
+
+            if pack:
+                if i == 1:  # Segunda inscripción del pack
+                    discount = Decimal(pack.discount_1)
+                    price -= price * discount / 100
+                elif i > 1:  # Tercera inscripción en adelante
+                    discount = Decimal(pack.discount_2)
+                    price -= price * discount / 100
+
+            total_fee += price
+
+    # Aplicar descuento familiar si procede
+    if student.family_id:
+        total_fee *= Decimal('0.90')  
+
+    final_fee = total_fee.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+    
+    return final_fee
+
+ 
+
 #---------------------------------------
 
 
@@ -257,6 +320,7 @@ def print_menu():
     print("6. Crear Instrumento")
     print("7. Actualizar Precio del Instrumento")
     print("8. Ver Detalles del Alumno")
+    print("9. Calcular Factura del Alumno")
     print("x. Salir")
 
 if __name__ == "__main__":
@@ -275,11 +339,11 @@ if __name__ == "__main__":
             age = int(input("Introduzca la edad: "))
             phone = input("Introduzca el número de teléfono: ")
             mail = input("Introduzca el correo electrónico: ")
-            familiar = input("¿Familiar en la Escuela? (Si/No): ").lower() == 'sí'
-            if familiar.lower == "si":
+            familiar = str(input("¿Familiar en la Escuela? (Si/No): ").lower())
+            if familiar == "si":
                 family_id = True
             else:
-                famly_id = False
+                family_id = False
                 
             new_student = create_student(first_name, last_name, age, phone, mail, family_id)
             print(f"Detalles del alumno: {new_student.first_name} {new_student.last_name}, ID: {new_student.id}")
@@ -340,6 +404,16 @@ if __name__ == "__main__":
             print("")
             print(details)
 
+        elif choice == '9':
+            student_id = int(input("Introduzca el ID del alumno para ver facturación: "))
+            fees = calculate_student_fees(student_id)
+            
+            student = session.get(Student, student_id)
+            print("")
+            print(f"Facturación del Alumno {student.first_name} {student.last_name} con ID {student_id}: {fees}€")
+
+      
+            
         else:
             print("Elección inválida. Por favor, inténtelo de nuevo.")
 
