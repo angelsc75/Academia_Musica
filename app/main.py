@@ -38,6 +38,14 @@ def create_teacher(teacher: schemas.CreateTeacher, db: Session = Depends(get_db)
         raise HTTPException(status_code=404, detail="Ya existe el profesor")
     return teacher
 
+@app.put("/teachers/{teacher_id}", response_model=schemas.Teacher)
+def update_teacher(teacher_id: int, teacher: schemas.UpdateTeacher, db: Session = Depends(get_db)):
+    new_teacher = teacher_crud.update_teacher(db, teacher_id, teacher.model_dump())
+    if new_teacher is None:
+        raise HTTPException(status_code=404, detail="Ya existe el profesor")
+    return teacher
+
+
 ### Dependenias y endpoints (instruments)
 
 @app.get("/instruments/{instrument_id}", response_model=schemas.Instrument)

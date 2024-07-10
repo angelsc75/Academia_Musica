@@ -30,3 +30,14 @@ def create_teacher(db: Session, teacher: Teacher):
 	db.add(new_teacher)
 	db.commit()
 	return new_teacher
+
+def update_teacher(db: Session, teacher_id: int, new_teacher: dict):
+	teacher = get_teacher(db, teacher_id)
+	if teacher:
+		for key, value in new_teacher.items():
+			setattr(teacher, key, value)
+		db.commit()
+		db.refresh(teacher)
+		return teacher
+	return None
+
