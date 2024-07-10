@@ -56,3 +56,7 @@ class FeeReport(BaseModel):
     inscription_count: int
     family_discount: str
 
+    class Config:
+        orm_mode = True
+
+
