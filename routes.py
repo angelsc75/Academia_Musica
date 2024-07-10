@@ -6,6 +6,7 @@ from database import get_db
 import crud
 from schemas import Student, StudentCreate, Inscription, InscriptionCreate, InscriptionDetail, FeeReport
 
+
 router = APIRouter()
 
 @router.post("/students/", response_model=Student)
@@ -47,6 +48,21 @@ def create_inscription(inscription: InscriptionCreate, db: Session = Depends(get
 @router.get("/inscriptions/", response_model=List[InscriptionDetail])
 def read_inscriptions(db: Session = Depends(get_db)):
     return crud.get_inscriptions(db)
+
+@router.delete("/inscriptions/{inscription_id}")
+def delete_inscription_route(inscription_id: int, db: Session = Depends(get_db)):
+    result = delete_inscription(db, inscription_id)
+    if result:
+        return {"message": "Inscription deleted successfully"}
+    else:
+        raise HTTPException(status_code=404, detail="Inscription not found")
+
+@router.get("/students/{student_id}/inscriptions", response_model=List[InscriptionDetail])
+def read_student_inscriptions(student_id: int, db: Session = Depends(get_db)):
+    inscriptions = get_inscriptions_by_student(db, student_id)
+    if not inscriptions:
+        raise HTTPException(status_code=404, detail="No inscriptions found for this student")
+    return inscriptions
 
 @router.get("/students/{student_id}/fee", response_model=float)
 def calculate_student_fee(student_id: int, db: Session = Depends(get_db)):
