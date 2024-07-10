@@ -14,7 +14,7 @@ class Student(Base):
     age: Mapped[int] = mapped_column(Integer, nullable=False)
     phone: Mapped[str] = mapped_column(String(50))
     mail: Mapped[str] = mapped_column(String(50))
-    family_id: Mapped[bool] = mapped_column(Boolean)
+    family_id: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
 
     inscriptions: Mapped[List["Inscription"]] = relationship(back_populates="student", cascade="all, delete-orphan")
 

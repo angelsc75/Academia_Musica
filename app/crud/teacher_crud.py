@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.models import Teacher
+from models import Teacher
 
 
 def get_teacher(db: Session, teacher_id: int):

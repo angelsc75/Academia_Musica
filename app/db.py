@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.models import Base
+from models import Base
 
 load_dotenv()
 
@@ -14,3 +14,9 @@ Base.metadata.create_all(engine)
 # Create a session
 SessionLocal = sessionmaker(bind=engine)
 # session = Session()
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
