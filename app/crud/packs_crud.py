@@ -1,9 +1,9 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.models import Pack, PacksInstruments
+from models import Pack
 
-def get_level(db: Session, pack_id: int):
+def get_pack(db: Session, pack_id: int):
     stmt = select(Pack).where(Pack.id == pack_id)
     result = db.scalars(stmt).first()
     return result

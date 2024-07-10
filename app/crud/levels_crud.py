@@ -1,9 +1,8 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.models import Level
+from models import Level
 
-# Buscar un nivel por id
 def get_level(db: Session, level_id: int):
     stmt = select(Level).where(Level.id == level_id)
     result = db.scalars(stmt).first()
