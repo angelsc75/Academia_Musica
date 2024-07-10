@@ -45,6 +45,9 @@ class InscriptionDetail(BaseModel):
     registration_date: str
     instrument_price: float
 
+    class Config:
+        orm_mode = True
+
 class FeeReport(BaseModel):
     student_id: int
     first_name: str
@@ -52,3 +55,4 @@ class FeeReport(BaseModel):
     total_fee: float
     inscription_count: int
     family_discount: str
+
