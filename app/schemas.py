@@ -11,6 +11,12 @@ class CreateTeacher(BaseModel):
 class Teacher(CreateTeacher):
 	id: int
      
+class UpdateTeacher(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    phone: Optional[str] = None
+    mail: Optional[str] = None
+
 
 #######Instruments (borrar)
 class InstrumentBase(BaseModel):
