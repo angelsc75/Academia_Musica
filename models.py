@@ -19,25 +19,6 @@ class Student(Base):
 
     inscriptions: Mapped[List["Inscription"]] = relationship(back_populates="student", cascade="all, delete-orphan")
     
-class Teacher(Base):
-    __tablename__ = 'teachers'
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    first_name: Mapped[str] = mapped_column(nullable=False)
-    last_name: Mapped[str] = mapped_column(nullable=False)
-    phone: Mapped[str] = mapped_column()
-    mail: Mapped[str] = mapped_column()
-
-    instruments: Mapped[List["Instrument"]] = relationship(secondary="teachers_instruments", back_populates="teachers")
-
-class Instrument(Base):
-    __tablename__ = 'instruments'
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(nullable=False)
-    price: Mapped[DECIMAL] = mapped_column(DECIMAL)
-
-    levels: Mapped[List["Level"]] = relationship(back_populates="instrument")
-    packs: Mapped[List["Pack"]] = relationship(secondary="packs_instruments", back_populates="instruments")
-    teachers: Mapped[List["Teacher"]] = relationship(secondary="teachers_instruments", back_populates="instruments")
 
 class Level(Base):
     __tablename__ = 'levels'
@@ -73,8 +54,29 @@ class Inscription(Base):
     student: Mapped["Student"] = relationship(back_populates="inscriptions")
     level: Mapped["Level"] = relationship(back_populates="inscriptions")
 
+
 class TeachersInstruments(Base):
     __tablename__ = 'teachers_instruments'
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     teacher_id: Mapped[int] = mapped_column(ForeignKey('teachers.id'))
     instrument_id: Mapped[int] = mapped_column(ForeignKey('instruments.id'))
+
+class Teacher(Base):
+    __tablename__ = 'teachers'
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    first_name: Mapped[str] = mapped_column(nullable=False)
+    last_name: Mapped[str] = mapped_column(nullable=False)
+    phone: Mapped[str] = mapped_column()
+    mail: Mapped[str] = mapped_column()
+
+    instruments: Mapped[List["Instrument"]] = relationship(secondary="teachers_instruments", back_populates="teachers")
+
+class Instrument(Base):
+    __tablename__ = 'instruments'
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(nullable=False)
+    price: Mapped[DECIMAL] = mapped_column(DECIMAL)
+
+    levels: Mapped[List["Level"]] = relationship(back_populates="instrument")
+    packs: Mapped[List["Pack"]] = relationship(secondary="packs_instruments", back_populates="instruments")
+    teachers: Mapped[List["Teacher"]] = relationship(secondary="teachers_instruments", back_populates="instruments")
