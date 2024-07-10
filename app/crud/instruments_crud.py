@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from decimal import Decimal
 from typing import List, Optional
-from app.models import Instrument, Pack, Teacher
+from models import Instrument, Pack, Teacher
 
 
 def create_instrument(db: Session, name: str, price: Decimal) -> Instrument:
