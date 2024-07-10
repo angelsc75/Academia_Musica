@@ -6,6 +6,7 @@ from typing import List, Dict
 from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
 import logging
+from sqlalchemy import func
 
 def create_student(db: Session, student: StudentCreate):
     db_student = Student(**student.dict())
@@ -79,6 +80,43 @@ def get_inscriptions(db: Session):
 
     return inscriptions
 
+def get_inscriptions_by_student(db: Session, student_id: int):
+    inscription_query = (
+        db.query(
+            Inscription,
+            Student,
+            Level,
+            Instrument
+        )
+        .join(Student, Inscription.student_id == Student.id)
+        .join(Level, Inscription.level_id == Level.id)
+        .join(Instrument, Level.instruments_id == Instrument.id)
+        .filter(Student.id == student_id)
+        .order_by(Inscription.registration_date.desc())
+    )
+
+    inscriptions = []
+    for inscription, student, level, instrument in inscription_query:
+        inscriptions.append({
+            'inscription_id': inscription.id,
+            'student_id': student.id,
+            'student_name': f"{student.first_name} {student.last_name}",
+            'instrument_name': instrument.name,
+            'level': level.level,
+            'registration_date': inscription.registration_date.strftime('%Y-%m-%d'),
+            'instrument_price': float(instrument.price)  
+        })
+
+    return inscriptions
+
+def delete_inscription(db: Session, inscription_id: int):
+    db_inscription = db.query(Inscription).filter(Inscription.id == inscription_id).first()
+    if db_inscription:
+        db.delete(db_inscription)
+        db.commit()
+        return True
+    return False
+
 def calculate_student_fees(db: Session, student_id: int):
     student = db.query(Student).filter(Student.id == student_id).first()
     if not student:
@@ -124,11 +162,14 @@ def calculate_student_fees(db: Session, student_id: int):
     
     return final_fee
 
+
+
+
 def generate_fee_report(db: Session):
     student_query = (
         db.query(
             Student,
-            db.func.count(Inscription.id).label('inscription_count')
+            func.count(Inscription.id).label('inscription_count')
         )
         .outerjoin(Inscription)
         .group_by(Student.id)
@@ -149,3 +190,7 @@ def generate_fee_report(db: Session):
             })
 
     return report
+
+
+
+
