@@ -1,52 +1,67 @@
-from app.models import Level, Instrument
-from app.db import session
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
-def create_level(instruments_id, level):
-    new_level = Level(instruments_id=instruments_id, level=level)
-    session.add(new_level)
-    session.commit()
+from app.models import Level
+
+# Buscar un nivel por id
+def get_level(db: Session, level_id: int):
+    stmt = select(Level).where(Level.id == level_id)
+    result = db.scalars(stmt).first()
+    return result
+
+# Listar todos los niveles
+def get_levels(db: Session):
+	stmt = select(Level)
+	return db.scalars(stmt).all()
+
+# Crear un nuevo nivel
+def create_level(db: Session, instruments_id: int, level: str):
+    # Verificar si ya existe un nivel con el mismo instrumento y nivel
+    stmt = select(Level).where(
+        (Level.instruments_id == instruments_id) and 
+        (Level.level == level)
+    )
+    result = db.execute(stmt).scalars().first()
+    if result is not None:
+        return None  # Nivel ya existente
+
+    # Crear un nuevo nivel
+    new_level = Level(
+        instruments_id=instruments_id,
+        level=level
+    )
+    db.add(new_level)
+    db.commit()
+    db.refresh(new_level)  # Refrescar la instancia para obtener los datos actualizados de la base de datos
     return new_level
 
-def get_level(level_id):
-    level = session.get(Level, level_id)
+def update_level(db: Session, level_id: int, **kwargs):
+    # Verificar si el nivel existe
+    level = db.get(Level, level_id)
+    if not level:
+        return None  # Nivel no encontrado
+
+    # Actualizar los campos del nivel
+    for key, value in kwargs.items():
+        if hasattr(level, key):
+            setattr(level, key, value)
+
+    db.commit()
+    db.refresh(level)  # Refrescar la instancia para obtener los datos actualizados de la base de datos
     return level
 
-def view_level_details(level_id):
-    level = session.get(Level, level_id)
+def delete_level(db: Session, level_id: int):
+    # Verificar si el nivel existe
+    level = db.get(Level, level_id)
     if not level:
-        return "Nivel no encontrado."
+        return False  # Nivel no encontrado
 
-    instrument = session.get(Instrument, level.instruments_id)
-
-    output = f"Detalles del Nivel para el ID {level.id}:\n"
-    output += f"Instrumento: {instrument.name}\n"
-    output += f"Nivel: {level.level}\n"
-
-    return output
-
-def get_all_levels():
-    levels = session.query(Level).all()
-    return levels
-
-def update_level(level_id, **kwargs):
-    level = session.get(Level, level_id)
-    if level:
-        for key, value in kwargs.items():
-            setattr(level, key, value)
-        session.commit()
-        return level
-    return None
-
-def delete_level(level_id):
-    level = session.get(Level, level_id)
-    if level:
-        try:
-            session.delete(level)
-            session.commit()
-            return True
-        except Exception as e:
-            session.rollback()
-            print(f"Error al eliminar el nivel: {str(e)}")
-            return False
-    else:
+    # Eliminar el nivel
+    try:
+        db.delete(level)
+        db.commit()
+        return True
+    except Exception as e:
+        db.rollback()
+        print(f"Error al eliminar el nivel: {str(e)}")
         return False
