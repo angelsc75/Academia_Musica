@@ -4,14 +4,16 @@ from typing import List
 from decimal import Decimal
 
 from db import get_db
-from crud.inscriptions_crud import delete_inscription, get_inscriptions, get_inscriptions_by_student, calculate_student_fees, generate_fee_report
-from crud.students_crud import get_students, create_student, delete_student, update_student
-from crud import teacher_crud, instruments_crud
+from crud.inscriptions_crud import delete_inscription, get_inscriptions, get_inscription, get_inscriptions_by_student, calculate_student_fees, generate_fee_report
+from crud.students_crud import get_students, create_student, delete_student, update_student, get_student
+from crud import teacher_crud, instruments_crud, students_crud
 from crud.levels_crud import create_level, delete_level, update_level, get_levels, get_level
 from crud.packs_crud import create_pack, delete_pack, update_pack, get_packs, get_pack
+from crud.pack_instruments_crud import create_packs_instruments, delete_packs_instruments, update_packs_instruments, get_packs_instruments, get_packs_instruments
 from schemas import Student, StudentCreate, Inscription, InscriptionCreate, InscriptionDetail,\
       FeeReport, Instrument, CreateInstrument, UpdateInstrument, Teacher, CreateTeacher, \
-      Level, LevelCreate, LevelUpdate, Pack, PackCreate, PackUpdate
+      Level, LevelCreate, LevelUpdate, Pack, PackCreate, PackUpdate, PacksInstruments, PacksInstrumentsCreate, \
+        PacksInstrumentsUpdate
 
 
 router = APIRouter()
@@ -19,6 +21,13 @@ router = APIRouter()
 @router.post("/students/", response_model=Student)
 def create_student(student: StudentCreate, db: Session = Depends(get_db)):
     return create_student(db=db, student=student)
+
+@router.get("/students/{student_id}", response_model=Student)
+def read_student(student_id: int, db: Session = Depends(get_db)):
+    db_student = students_crud.get_student(db, student_id)
+    if db_student is None:
+        raise HTTPException(status_code=404, detail="Estudiante no encontrado")
+    return db_student
 
 @router.get("/students/", response_model=List[Student])
 def read_students(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
@@ -49,6 +58,13 @@ def create_inscription(inscription: InscriptionCreate, db: Session = Depends(get
 @router.get("/inscriptions/", response_model=List[InscriptionDetail])
 def read_inscriptions(db: Session = Depends(get_db)):
     return get_inscriptions(db)
+
+@router.get("/inscriptions/{inscription_id}", response_model=Inscription)
+def read_inscription(inscription_id: int, db: Session = Depends(get_db)):
+    db_inscription = inscriptions_crud.get_inscription(db, inscription_id)
+    if db_inscription is None:
+        raise HTTPException(status_code=404, detail="Profesor no encontrado")
+    return db_inscription
 
 @router.delete("/inscriptions/{inscription_id}")
 def delete_inscription_route(inscription_id: int, db: Session = Depends(get_db)):
@@ -210,6 +226,39 @@ def update_pack(pack_id: int, pack_update: PackUpdate, db: Session = Depends(get
 @router.delete("/packs/{pack_id}", response_model=bool)
 def delete_pack(pack_id: int, db: Session = Depends(get_db)):
     success = delete_pack(db, pack_id=pack_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Pack no encontrado")
+    return success
+
+
+@router.get("/packs_instruments/{packs_instruments_id}", response_model=PacksInstruments)
+def read_packs_instruments(packs_instruments_id: int, db: Session = Depends(get_db)):
+    db_packs_instruments = get_packs_instruments(db, packs_instruments_id=packs_instruments_id)
+    if db_packs_instruments is None:
+        raise HTTPException(status_code=404, detail="Pack de instrumentos no encontrado")
+    return db_packs_instruments
+
+@router.get("/packs_instruments/", response_model=List[PacksInstruments])
+def read_packs_instruments(db: Session = Depends(get_db)):
+    return get_packs_instruments(db)
+
+@router.post("/packs_instruments/", response_model=PacksInstruments)
+def create_packs_instruments(packs_instruments: PacksInstrumentsCreate, db: Session = Depends(get_db)):
+    db_pack_instruments = create_packs_instruments(db, packs_instruments_id=packs_instruments.packs_instruments_id, packs_id=packs_instruments.packs_id, instrument_id=packs_instruments.instrument_id)
+    if db_pack_instruments is None:
+        raise HTTPException(status_code=400, detail="El pack de instrumentos ya existe")
+    return db_pack_instruments
+
+@router.put("/packs_instruments/{packs_instruments_id}", response_model=PacksInstruments)
+def update_pack_instrument(packs_instruments_id: int, packs_instruments_update: PacksInstrumentsUpdate, db: Session = Depends(get_db)):
+    db_packs_instrument = update_packs_instruments(db, packs_instrument_id=packs_instruments_id, **packs_instruments.update.dict(exclude_unset=True))
+    if db_packs_instrument is None:
+        raise HTTPException(status_code=404, detail="Pack de instrumentos no encontrado")
+    return db_packs_instrument
+
+@router.delete("/packs_instruments/{pack_instrument_id}", response_model=bool)
+def delete_pack_instrument(pack_instrument_id: int, db: Session = Depends(get_db)):
+    success = delete_pack(db, pack_instrument_id=pack_instrument_id)
     if not success:
         raise HTTPException(status_code=404, detail="Pack no encontrado")
     return success
