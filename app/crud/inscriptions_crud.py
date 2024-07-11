@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import and_
+from sqlalchemy import and_, select
 from models import Student, Inscription, Level, Instrument, Pack, PacksInstruments
 from schemas import StudentCreate, InscriptionCreate
 from typing import List, Dict
@@ -14,6 +14,11 @@ def create_inscription(db: Session, inscription: InscriptionCreate):
     db.commit()
     db.refresh(db_inscription)
     return db_inscription
+
+def get_inscription(db: Session, inscription_id: int):
+	stmt = select(Inscription).where(Inscription.id == inscription_id)
+	result = db.scalars(stmt).first()
+	return result
 
 def get_inscriptions(db: Session):
     inscription_query = (
