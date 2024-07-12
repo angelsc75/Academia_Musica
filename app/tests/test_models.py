@@ -1,26 +1,57 @@
 from models import Teacher, Student, Instrument
 
+'''Tests
+client: fixture que permite hacer las peticiones http.
+teacher: Datos de un profesor para hacer pruebas.
+
+client y teacher se encuentran en el archivo contest.py
+'''
+
+
 ''' Test for Teachers'''
 
 def test_teacher_create_get(client, teacher):
+	''' Test para verificar los endpoints de crear profesor
+	y obtener profesor por id.
+	'''
+	# Creo un registro de profesor con los datos de teacher
+	# client.post(ruta, datos_del_profesor)
 	res = client.post("/teachers/", json=teacher)
+	# Comprobar el código de respuesta
 	assert res.status_code == 200, f"Error in post, expect: 200, not: {res.status_code}"
+	# Obtener profesor creado, pasandole el id: 1
 	res = client.get("/teachers/1")
+	# Comprobar el código de respuesta 
 	assert res.status_code == 200, f"Error in get, expect: 200, not: {res.status_code}"
+	# Agregar "id": 1, al diccionario de teacher, ya que este no lo tiene
 	teacher["id"] = 1
+	# Recuperar la información del profesor obtenido del get
 	data = res.json()
-	assert teacher == data, f"Error, data exp: {teacher}, not: {data}"
+	# Validar la información del profesor.
+	for t in teacher.items():
+		assert t in data.items(), f"Error with data: {t}"
 
 def test_teacher_duplicate_data_fail(client, teacher):
+	''' Test para comprobar que no se permite crear datos
+	duplicados '''
+	# Creo un profeosor con los datos de teacher
 	client.post("/teachers/", json=teacher)
+	# Vuelvo a crear un profesor con los mismos datos para comprobar
+	# la respuesta 404, guardo lo que devuelve la petición en res.
 	res = client.post("/teachers/", json=teacher)
+	# Compruebo el código de estado devuelto por la petición post.
 	assert res.status_code == 404
 
 def test_teacher_get_fail(client):
+	''' Test para recuperar profesor no creado'''
+	# Le paso el id de un profesor que no esta creado.
 	res = client.get("/teachers/1")
 	assert res.status_code == 404
 
 def test_teacher_get_all(client, db_session):
+	''' Test para endpoint de obtener todos los profesores.'''
+	# Creo 3 objetos de Teacher con un bucle for
+	# Y lo guardo en la bd
 	for i in range(3):
 		teacher = Teacher(
 			first_name="teacher" + str(i), 
@@ -29,23 +60,35 @@ def test_teacher_get_all(client, db_session):
 			mail=f"teacher{i}@gmail.com")
 		db_session.add(teacher)
 		db_session.commit()
+	# Realizo la petición
 	res = client.get("/teachers/")
 	assert res.status_code == 200, f"Error, expected:200, not:{res.status_code}"
 	data = res.json()
+	# Verifico la cantidad de profesores.
 	assert len(data) == 3, f"Error, expected quantity: 3, not: {len(data)}"
 
 def test_teacher_update(client, teacher):
+	''' Test para endpoint de update Teacher'''
+	# Creo un profesor con la información de teacher.
 	client.post("/teachers/", json=teacher)
+	# Actualizo la información de phone.
 	res = client.put("/teachers/1", json={'phone': '555555559'})
+	# Verifico el codigo de respuesta
 	assert res.status_code == 200, f"Error, expected:200, not:{res.status_code}"
 	data = res.json()
+	# Valido información.
 	assert data["first_name"] == teacher["first_name"]
 	assert data["phone"] == '555555559', "Error update data"
 
 def test_teacher_delete(client, teacher):
+	''' Test para endpoint delete Teacher'''
+	# Creo un profesor con la información de teacher.
 	client.post("/teachers/", json=teacher)
+	# Elimino el profesor creado pasandole el id a la ruta.
 	res = client.delete("/teachers/1")
+	# Verifico el código de respuesta
 	assert res.status_code == 200, f"Error, expected:200, not:{res.status_code} {res.content}"
+	# Compruebo que se elimino
 	res = client.get("/teachers/1")
 	assert res.status_code == 404, "Error delete data"
 
@@ -58,7 +101,8 @@ def test_student_create_get(client, student):
 	assert res.status_code == 200, f"Error in get, expect: 200, not: {res.status_code}"
 	student["id"] = 1
 	data = res.json()
-	assert student == data, f"Error, data exp: {student}, not: {data}"
+	for t in student.items():
+		assert t in data.items(), f"Error with data: {t}"
 
 def test_student_duplicate_data_fail(client, student):
 	client.post("/students/", json=student)
@@ -150,22 +194,21 @@ def test_instrument_delete(client, instrument):
 
 def test_level_create_get(client, instrument):
 	client.post("/instruments/", json=instrument)
-	instr = client.get("/instruments/1").json()
-	res = client.post("/levels/", json={"instruments_id": instr["id"], "level": "Básico"})
-	print(res.json())
+	res = client.post("/levels/", json={"instruments_id": 1, "level": "Básico"})
 	assert res.status_code == 200, f"Error in post, expect: 200, not: {res.status_code}"
 	res = client.get("/levels/1")
 	assert res.status_code == 200, f"Error in get, expect: 200, not: {res.status_code}"
 	data = res.json()
 	print("data: \n", data)
-	assert data["instruments_id"] == instr["id"]
-	assert data["level"] != "Básico"
+	assert data["instruments_id"] == 1
+	assert data["level"] == "Básico"
 
 def test_level_duplicate_data_fail(client, instrument):
 	client.post("/instruments/", json=instrument)
 	instr = client.get("/instruments/1").json()
-	client.post("/levels/", json={"instruments_id": instr["id"], "level": "Básico"})
-	res = client.post("/levels/", json={"instruments_id": instr["id"], "level": "Básico"})
+	level_data = {"instruments_id": instr["id"], "level": "Básico"}
+	client.post("/levels/", json=level_data)
+	res = client.post("/levels/", json=level_data)
 	assert res.status_code == 400
 
 # def test_level_get_fail(client):

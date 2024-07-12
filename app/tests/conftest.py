@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from models import Base
+from models import Base, Instrument
 from db import get_db
 from main import app
 
@@ -55,7 +55,8 @@ def student():
 		"last_name": "Test",
 		"age": 30,
 		"phone": "60009093", 
-		"mail":"mica2.test@gmail.com"
+		"mail":"mica2.test@gmail.com",
+		"family_id": True
 	}
 
 @pytest.fixture
