@@ -8,25 +8,24 @@ def get_teacher_instruments(db: Session, teachers_instruments_id: int):
     result = db.scalars(stmt).first()
     return result
 
-# Listar todos los niveles
+# Listar todas las relaciones de profesor-instrumento
 def get_teachers_instruments(db: Session):
 	stmt = select(TeachersInstruments)
 	return db.scalars(stmt).all()
 
 # Crear un nuevo nivel
-def create_teachers_instruments(db: Session, teachers_instruments_id: int, teacher_id: int, instrument_id: int):
+def create_teachers_instruments(db: Session, teacher_id: int, instrument_id: int):
     # Verificar si ya existe un nivel con el mismo instrumento y nivel
     stmt = select(TeachersInstruments).where(
-        (TeachersInstruments.instrument_id == instrument_id) and 
+        (TeachersInstruments.instrument_id == instrument_id) &
         (TeachersInstruments.teacher_id == teacher_id)
     )
     result = db.execute(stmt).scalars().first()
-    if result is not None:
+    if result:
         return None  # Nivel ya existente
 
     # Crear un nuevo nivel
     new_teachers_instruments = TeachersInstruments(
-        teachers_instruments_id=teachers_instruments_id,
         teacher_id=teacher_id,
         instrument_id=instrument_id
     )
