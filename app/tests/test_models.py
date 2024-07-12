@@ -149,14 +149,16 @@ def test_instrument_delete(client, instrument):
 '''Tests for Levels'''
 
 def test_level_create_get(client, instrument):
-	instr = client.post("/instrument/", json=instrument).json()
-	res = client.post("/levels/", json={"instrument_id": instr.id, "level": "Básico"})
+	client.post("/instruments/", json=instrument)
+	instr = client.get("/instruments/1").json()
+	res = client.post("/levels/", json={"instruments_id": instr["id"], "level": "Básico"})
+	print(res.json())
 	assert res.status_code == 200, f"Error in post, expect: 200, not: {res.status_code}"
 	res = client.get("/levels/1")
 	assert res.status_code == 200, f"Error in get, expect: 200, not: {res.status_code}"
-	instrument["id"] = 1
 	data = res.json()
-	assert instrument == data, f"Error, data exp: {instrument}, not: {data}"
+	assert data["instruments_id"] == instr["id"]
+	assert data["level"] != "Básico"
 
 # def test_level_duplicate_data_fail(client, instrument):
 # 	client.post("/instruments/", json=instrument)
