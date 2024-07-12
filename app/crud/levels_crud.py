@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from models import Level
+from models import Level, Instrument
 
 def get_level(db: Session, level_id: int):
     stmt = select(Level).where(Level.id == level_id)
@@ -17,11 +17,11 @@ def get_levels(db: Session):
 def create_level(db: Session, instruments_id: int, level: str):
     # Verificar si ya existe un nivel con el mismo instrumento y nivel
     stmt = select(Level).where(
-        (Level.instruments_id == instruments_id) and 
+        (Level.instruments_id == instruments_id) & 
         (Level.level == level)
     )
     result = db.execute(stmt).scalars().first()
-    if result is not None:
+    if result:
         return None  # Nivel ya existente
 
     # Crear un nuevo nivel

@@ -53,4 +53,3 @@ def delete_pack(db: Session, pack_id: int):
         db.rollback()
         print(f"Error al eliminar el pack: {str(e)}")
         return False
-

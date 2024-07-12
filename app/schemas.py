@@ -13,6 +13,12 @@ class CreateTeacher(BaseModel):
 class Teacher(CreateTeacher):
 	id: int
      
+class UpdateTeacher(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    phone: Optional[str] = None
+    mail: Optional[str] = None
+
 
 #######Instruments (borrar)
 class InstrumentBase(BaseModel):
@@ -123,6 +129,33 @@ class PackUpdate(BaseModel):
     discount_1: Optional[float]
     discount_2: Optional[float]
 
+    class Config:
+        orm_mode = True
+        
+class PacksInstrumentsCreate(BaseModel):
+    
+    pack_id: int
+    instrument_id: int
+class PacksInstruments(PacksInstrumentsCreate):
+    id: int
+class PacksInstrumentsUpdate(BaseModel):
+    pack_id: Optional[int]
+    instrument_id: Optional[int]
+    
+
+    class Config:
+        orm_mode = True
+        
+class TeachersInstrumentsCreate(BaseModel):
+    teacher_id: int
+    instrument_id: int
+    
+class TeachersInstruments(TeachersInstrumentsCreate):
+    id: int
+class TeachersInstrumentsUpdate(BaseModel):
+    teacher_id: Optional[int]
+    instrument_id: Optional[int]
+    
     class Config:
         orm_mode = True
 

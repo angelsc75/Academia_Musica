@@ -85,3 +85,4 @@ class TeachersInstruments(Base):
     teacher_id: Mapped[int] = mapped_column(ForeignKey('teachers.id'))
     instrument_id: Mapped[int] = mapped_column(ForeignKey('instruments.id'))
 
+
