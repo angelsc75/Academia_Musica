@@ -35,9 +35,17 @@ def update_teacher(db: Session, teacher_id: int, new_teacher: dict):
 	teacher = get_teacher(db, teacher_id)
 	if teacher:
 		for key, value in new_teacher.items():
-			setattr(teacher, key, value)
+			if value:
+				setattr(teacher, key, value)
 		db.commit()
 		db.refresh(teacher)
 		return teacher
 	return None
 
+def delete_teacher(db: Session, teacher_id:int):
+	teacher = get_teacher(db, teacher_id)
+	if teacher:
+		db.delete(teacher)
+		db.commit()
+		return True
+	return False
