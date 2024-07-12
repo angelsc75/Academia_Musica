@@ -7,6 +7,11 @@ from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
 import logging
 from sqlalchemy import func
+from fastapi import APIRouter
+
+router = APIRouter()
+
+# Your student-related routes go here
 
 def create_student(db: Session, student: StudentCreate):
     db_student = Student(**student.model_dump())

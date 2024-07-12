@@ -1,7 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
+from core.security import create_access_token
+from crud import auth
+from models import Student
+from schemas import Token
 from sqlalchemy.orm import Session
 from typing import List
 from decimal import Decimal
+from core.security import oauth2_scheme
 
 from db import get_db
 from crud.inscriptions_crud import create_inscription, delete_inscription, get_inscriptions, get_inscription, get_inscriptions_by_student, calculate_student_fees, generate_fee_report,update_inscription
@@ -16,10 +22,31 @@ from schemas import Student, StudentCreate, Inscription, InscriptionCreate, Insc
         Level, LevelCreate, LevelUpdate, Pack, PackCreate, PackUpdate, PacksInstruments, PacksInstrumentsCreate, \
         PacksInstrumentsUpdate, TeachersInstruments, TeachersInstrumentsCreate, TeachersInstrumentsUpdate, \
         UpdateTeacher
+from fastapi import APIRouter
+
+
+
+api_router = APIRouter()
+api_router.include_router(auth.router, tags=["auth"])
+api_router.include_router(Student.router, prefix="/students", tags=["students"])
+api_router.include_router(teacher.router, prefix="/teachers", tags=["teachers"])
+api_router.include_router(instrument.router, prefix="/instruments", tags=["instruments"])
 
 
 
 router = APIRouter()
+
+@router.post("/token", response_model=Token)
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    user = auth.authenticate_user(db, form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token = create_access_token(data={"sub": user.username})
+    return {"access_token": access_token, "token_type": "bearer"}
 
 @router.post("/students/", response_model=Student, tags=["students"])
 def create_students(student: StudentCreate, db: Session = Depends(get_db)):
@@ -317,3 +344,13 @@ def delete_teachers_instrument(teachers_instruments_id: int, db: Session = Depen
     if not success:
         raise HTTPException(status_code=404, detail="Asociación de profesor e instrumento no encontrada")
     return success
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    payload = decode_access_token(token)
+    if payload is None:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    return payload
+
+@router.get("/", response_model=list[Student])
+def read_students(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    students = students_crud.get_students(db, skip=skip, limit=limit)
+    return students

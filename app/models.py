@@ -1,11 +1,17 @@
 from sqlalchemy import ForeignKey, DECIMAL, Date, Boolean, String, Integer
 from sqlalchemy.orm import relationship, declarative_base, Mapped, mapped_column
-
 from typing import List
 from datetime import date
+#from db import Base
 
 Base = declarative_base()
 
+class User(Base):
+    __tablename__ = 'users'
+    id = mapped_column(Integer, primary_key=True, autoincrement=True)
+    username = mapped_column(String(50), nullable=False)
+    password = mapped_column(String(50), nullable=False)
+    email = mapped_column(String(50), nullable=False)
 class Student(Base):
     __tablename__ = 'students'
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)

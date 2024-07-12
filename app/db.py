@@ -12,7 +12,7 @@ engine = create_engine(os.environ['DATABASE_URL'], echo=False)
 Base.metadata.create_all(engine)
 
 # Create a session
-SessionLocal = sessionmaker(bind=engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False,bind=engine)
 # session = Session()
 def get_db():
     db = SessionLocal()
