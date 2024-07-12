@@ -131,3 +131,30 @@ class PackUpdate(BaseModel):
 
     class Config:
         orm_mode = True
+        
+class PacksInstrumentsCreate(BaseModel):
+    
+    pack_id: int
+    instrument_id: int
+class PacksInstruments(PacksInstrumentsCreate):
+    id: int
+class PacksInstrumentsUpdate(BaseModel):
+    pack_id: Optional[int]
+    instrument_id: Optional[int]
+    
+
+    class Config:
+        orm_mode = True
+        
+class TeachersInstrumentsCreate(BaseModel):
+    teacher_id: int
+    instrument_id: int
+    
+class TeachersInstruments(TeachersInstrumentsCreate):
+    id: int
+class TeachersInstrumentsUpdate(BaseModel):
+    teacher_id: Optional[int]
+    instrument_id: Optional[int]
+    
+    class Config:
+        orm_mode = True

@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from models import Level
+from models import Level, Instrument
 
 def get_level(db: Session, level_id: int):
     stmt = select(Level).where(Level.id == level_id)

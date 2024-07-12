@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import and_
+from sqlalchemy import and_, select
 from models import Student, Inscription, Level, Instrument, Pack, PacksInstruments
 from schemas import StudentCreate, InscriptionCreate
 from typing import List, Dict
@@ -9,7 +9,7 @@ import logging
 from sqlalchemy import func
 
 def create_student(db: Session, student: StudentCreate):
-    db_student = Student(**student.dict())
+    db_student = Student(**student.model_dump())
     db.add(db_student)
     db.commit()
     db.refresh(db_student)
@@ -27,6 +27,11 @@ def get_students(db: Session, skip: int = 0, limit: int = 200):
     
 def get_students(db: Session, skip: int = 0, limit: int = 100):
     return db.query(Student).offset(skip).limit(limit).all()
+
+def get_student(db: Session, student_id: int):
+	stmt = select(Student).where(Student.id == student_id)
+	result = db.scalars(stmt).first()
+	return result
 
 def update_student(db: Session, student_id: int, student_data: dict):
     db_student = db.query(Student).filter(Student.id == student_id).first()
