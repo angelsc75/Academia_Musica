@@ -11,7 +11,7 @@ from crud.levels_crud import create_level, delete_level, update_level, get_level
 from crud.packs_crud import create_pack, delete_pack, update_pack, get_packs, get_pack
 from schemas import Student, StudentCreate, Inscription, InscriptionCreate, InscriptionDetail,\
       FeeReport, Instrument, CreateInstrument, UpdateInstrument, Teacher, CreateTeacher, \
-      Level, LevelCreate, LevelUpdate, Pack, PackCreate, PackUpdate
+      Level, LevelCreate, LevelUpdate, Pack, PackCreate, PackUpdate, UpdateTeacher
 
 
 router = APIRouter()
@@ -102,6 +102,19 @@ def create_teacher(teacher: CreateTeacher, db: Session = Depends(get_db)):
     if teacher is None:
         raise HTTPException(status_code=404, detail="Ya existe el profesor")
     return teacher
+
+@router.put("/teachers/{teacher_id}", response_model=Teacher)
+def update_teacher(teacher_id: int, teacher: UpdateTeacher, db: Session = Depends(get_db)):
+    new_teacher = teacher_crud.update_teacher(db, teacher_id, teacher.model_dump())
+    if new_teacher is None:
+        raise HTTPException(status_code=404, detail="Ningun profesor con ese id")
+    return new_teacher
+
+@router.delete("/teachers/{teacher_id}")
+def delete_teacher(teacher_id: int, db: Session = Depends(get_db)):
+    if teacher_crud.delete_teacher(db, teacher_id) is False:
+        raise HTTPException(status_code=404, detail="Ningun profesor con ese id")
+    return {"message": "Profesor eliminado correctamente"}
 
 ### Dependenias y endpoints (instruments)
 
