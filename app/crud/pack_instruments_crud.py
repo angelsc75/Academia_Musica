@@ -14,10 +14,10 @@ def get_packs_instruments(db: Session):
 	return db.scalars(stmt).all()
 
 # Crear un nuevo paquete de instrumentos
-def create_packs_instruments(db: Session, packs_instrument_id: int, instrument_id: int, packs_id: int):
+def create_packs_instruments(db: Session, instrument_id: int, packs_id: int):
     # Verificar si ya existe un nivel con el mismo instrumento y nivel
     stmt = select(PacksInstruments).where(
-        (PacksInstruments.instrument_id == instrument_id) and 
+        (PacksInstruments.instrument_id == instrument_id) & 
         (PacksInstruments.packs_id == packs_id)
     )
     result = db.execute(stmt).scalars().first()
@@ -26,7 +26,6 @@ def create_packs_instruments(db: Session, packs_instrument_id: int, instrument_i
 
     # Crear un nuevo nivel
     new_pack_instruments = PacksInstruments(
-        packs_instrument_id=packs_instrument_id,
         instrument_id=instrument_id,
         packs_id=packs_id
     )
