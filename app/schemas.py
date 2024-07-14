@@ -134,12 +134,12 @@ class PackUpdate(BaseModel):
         
 class PacksInstrumentsCreate(BaseModel):
     
-    pack_id: int
+    packs_id: int
     instrument_id: int
 class PacksInstruments(PacksInstrumentsCreate):
     id: int
 class PacksInstrumentsUpdate(BaseModel):
-    pack_id: Optional[int]
+    packs_id: Optional[int]
     instrument_id: Optional[int]
     
 
