@@ -208,14 +208,14 @@ def create_levels(level: LevelCreate, db: Session = Depends(get_db)):
     return db_level
 
 @router.put("/levels/{level_id}", response_model=Level, tags=["levels"])
-def update_level(level_id: int, level_update: LevelUpdate, db: Session = Depends(get_db)):
+def update_levels(level_id: int, level_update: LevelUpdate, db: Session = Depends(get_db)):
     db_level = update_level(db, level_id=level_id, **level_update.model_dump())
     if db_level is None:
         raise HTTPException(status_code=404, detail="Nivel no encontrado")
     return db_level
 
 @router.delete("/levels/{level_id}", response_model=bool, tags=["levels"])
-def delete_level(level_id: int, db: Session = Depends(get_db)):
+def delete_levels(level_id: int, db: Session = Depends(get_db)):
     success = delete_level(db, level_id=level_id)
     if not success:
         raise HTTPException(status_code=404, detail="Nivel no encontrado")
@@ -267,21 +267,21 @@ def read_packs_instruments(db: Session = Depends(get_db)):
 
 @router.post("/packs_instruments/", response_model=PacksInstruments, tags=["packs_instruments"])
 def create_pack_instruments(packs_instruments: PacksInstrumentsCreate, db: Session = Depends(get_db)):
-    db_pack_instruments = create_packs_instruments(db, packs_instruments_id=packs_instruments.pack_instruments_id, packs_id=packs_instruments.pack_id, instrument_id=packs_instruments.instrument_id)
+    db_pack_instruments = create_packs_instruments(db, packs_id=packs_instruments.packs_id, instrument_id=packs_instruments.instrument_id)
     if db_pack_instruments is None:
         raise HTTPException(status_code=400, detail="El pack de instrumentos ya existe")
     return db_pack_instruments
 
 @router.put("/packs_instruments/{packs_instruments_id}", response_model=PacksInstruments, tags=["packs_instruments"])
 def update_pack_instrument(packs_instruments_id: int, packs_instruments_update: PacksInstrumentsUpdate, db: Session = Depends(get_db)):
-    db_packs_instrument = update_packs_instruments(db, packs_instrument_id=packs_instruments_id, packs_instruments_update=packs_instruments_update)
+    db_packs_instrument = update_packs_instruments(db, packs_instruments_id=packs_instruments_id, **packs_instruments_update.model_dump(exclude_unset=True))
     if db_packs_instrument is None:
         raise HTTPException(status_code=404, detail="Pack de instrumentos no encontrado")
     return db_packs_instrument
 
-@router.delete("/packs_instruments/{pack_instrument_id}", response_model=bool, tags=["packs_instruments"])
-def delete_pack_instrument(pack_instrument_id: int, db: Session = Depends(get_db)):
-    success = delete_pack(db, pack_instrument_id=pack_instrument_id)
+@router.delete("/packs_instruments/{packs_instruments_id}", response_model=bool, tags=["packs_instruments"])
+def delete_pack_instrument(packs_instruments_id: int, db: Session = Depends(get_db)):
+    success = delete_packs_instruments(db, packs_instruments_id=packs_instruments_id)
     if not success:
         raise HTTPException(status_code=404, detail="Pack no encontrado")
     return success
@@ -299,21 +299,21 @@ def read_teachers_instruments(db: Session = Depends(get_db)):
 
 @router.post("/teachers_instruments/", response_model=TeachersInstruments, tags=["teachers_instruments"])
 def create_teacher_instrument(teachers_instruments: TeachersInstrumentsCreate, db: Session = Depends(get_db)):
-    db_teachers_instruments = create_teachers_instruments(db, teachers_instruments_id = teachers_instruments.teachers_instruments_id, teacher_id=teachers_instruments.teacher_id, instrument_id=teachers_instruments.instrument_id)
+    db_teachers_instruments = create_teachers_instruments(db, teacher_id=teachers_instruments.teacher_id, instrument_id=teachers_instruments.instrument_id)
     if db_teachers_instruments is None:
         raise HTTPException(status_code=400, detail="La asociación de profesor e instrumento ya existe")
     return db_teachers_instruments
 
 @router.put("/teachers_instruments/{teachers_instruments_id}", response_model=TeachersInstruments, tags=["teachers_instruments"])
 def update_teachers_instrument(teachers_instruments_id: int, teachers_instruments_update: TeachersInstrumentsUpdate, db: Session = Depends(get_db)):
-    db_teachers_instruments = update_teachers_instruments(db, teachers_isntruments_id=teachers_instruments_id, **teachers_instruments_update.model_dump(exclude_unset=True))
+    db_teachers_instruments = update_teachers_instruments(db, teachers_instruments_id=teachers_instruments_id, **teachers_instruments_update.model_dump(exclude_unset=True))
     if db_teachers_instruments is None:
         raise HTTPException(status_code=404, detail="Asociación de profesor e instrumento no encontrada")
     return db_teachers_instruments
 
 @router.delete("/teachers_instruments/{teachers_instruments_id}", response_model=bool, tags=["teachers_instruments"])
 def delete_teachers_instrument(teachers_instruments_id: int, db: Session = Depends(get_db)):
-    success = delete_pack(db, teachers_instruments_id=teachers_instruments_id)
+    success = delete_teacher_instruments(db, teacher_instrument_id=teachers_instruments_id)
     if not success:
         raise HTTPException(status_code=404, detail="Asociación de profesor e instrumento no encontrada")
     return success
