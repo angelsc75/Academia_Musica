@@ -8,11 +8,11 @@ Base = declarative_base()
 
 class User(Base):
     __tablename__ = 'users'
-    id = mapped_column(Integer, primary_key=True, autoincrement=True, index=True)
-    username = mapped_column(String(50), unique=True, index=True, nullable=False)
-    hashed_password = mapped_column(String(50), nullable=False)
+    id = mapped_column(Integer, primary_key=True, autoincrement=True)
+    username = mapped_column(String(50), unique=True, nullable=False)
+    hashed_password = mapped_column(String(300), nullable=False)
     is_active = Column(Boolean, default=True)
-    email = mapped_column(String(50), nullable=False)
+    #email = mapped_column(String(50), nullable=False)
 class Student(Base):
     __tablename__ = 'students'
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)

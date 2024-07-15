@@ -2,11 +2,13 @@ from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
-from app.core.config import settings
+from core.config import settings
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from app import models, schemas
-from app.db import get_db
+
+from db import get_db
+import models
+import schemas
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
