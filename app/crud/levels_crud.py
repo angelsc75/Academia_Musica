@@ -5,23 +5,34 @@ from fastapi import HTTPException
 from typing import Optional, List
 from models import Level, Instrument
 import logging
-
+''' 
+Cada función en este código está diseñada para interactuar con la base de datos a través de SQLAlchemy y manejar las operaciones 
+CRUD (crear, leer, actualizar y eliminar) para los niveles (Level). Además, se incluyen manejos de errores detallados y logging para registrar las 
+operaciones y posibles fallos.
+'''
 # Obtener el logger configurado
 logger = logging.getLogger("music_app")
 
+# Obtener un nivel específico por ID
 def get_level(db: Session, level_id: int) -> Optional[Level]:
     try:
+        # Crear una consulta para seleccionar el nivel con el ID especificado
         stmt = select(Level).where(Level.id == level_id)
+        # Ejecutar la consulta y obtener el primer resultado
         result = db.scalars(stmt).first()
         if result is None:
+            # Si no se encuentra el nivel, registrar un mensaje y lanzar una excepción HTTP 404
             logger.info("Nivel no encontrado")
             raise HTTPException(status_code=404, detail="Nivel no encontrado")
+        # Si se encuentra el nivel, registrar un mensaje y devolver el resultado
         logger.info("Nivel recuperado con éxito")
         return result
     except SQLAlchemyError as e:
+        # Manejar errores de base de datos, registrar el error y lanzar una excepción HTTP 500
         logger.error(f"Error de base de datos al obtener el nivel: {str(e)}")
         raise HTTPException(status_code=500, detail="Error de base de datos")
     except Exception as e:
+        # Manejar otros errores, registrar el error y lanzar una excepción HTTP 500
         logger.error(f"Error inesperado al obtener el nivel: {str(e)}")
         raise HTTPException(status_code=500, detail="Error inesperado")
 
@@ -76,6 +87,7 @@ def create_level(db: Session, instruments_id: int, level: str) -> Optional[Level
         logger.error(f"Error inesperado al crear el nivel: {str(e)}")
         raise HTTPException(status_code=500, detail="Error inesperado")
 
+# Actualizar un nivel existente
 def update_level(db: Session, level_id: int, **kwargs) -> Optional[Level]:
     try:
         # Verificar si el nivel existe
@@ -88,8 +100,8 @@ def update_level(db: Session, level_id: int, **kwargs) -> Optional[Level]:
         if 'instruments_id' in kwargs:
             instrument_exists = db.get(Instrument, kwargs['instruments_id'])
             if not instrument_exists:
-               logger.info("Instrumento no encontrado para actualización")
-               raise HTTPException(status_code=404, detail="Instrumento no encontrado")
+                logger.info("Instrumento no encontrado para actualización")
+                raise HTTPException(status_code=404, detail="Instrumento no encontrado")
 
         # Actualizar los campos del nivel
         for key, value in kwargs.items():
@@ -109,7 +121,7 @@ def update_level(db: Session, level_id: int, **kwargs) -> Optional[Level]:
         logger.error(f"Error inesperado al actualizar el nivel: {str(e)}")
         raise HTTPException(status_code=500, detail="Error inesperado")
 
-
+# Eliminar un nivel existente
 def delete_level(db: Session, level_id: int) -> bool:
     try:
         level = db.get(Level, level_id)
