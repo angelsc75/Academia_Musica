@@ -1,5 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
+from datetime import date
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -9,7 +10,9 @@ from models import Base
 from db import get_db
 from main import app
 from crud.instruments_crud import create_instrument
-
+from crud.students_crud import create_student
+from crud.levels_crud import create_level
+from crud.packs_crud import create_pack
 
 DATABASE_URL_TEST = "sqlite:///:memory"
 
@@ -73,4 +76,31 @@ def level(db_session, instrument):
 	return {
 		"instruments_id": instr.id,
 		"level": "Básico"
+	}
+
+@pytest.fixture
+def pack():
+	return {
+		"pack": "Pack 1",
+		"discount_1": 25,
+		"discount_2": 35
+	}
+
+@pytest.fixture
+def pack_instrument(db_session, pack, instrument):
+	obj_pack = create_pack(db_session, **pack)
+	obj_instr = create_instrument(db_session, **instrument)
+	return {
+		"instrument_id": obj_instr.id,
+		"packs_id": obj_pack.id
+	}
+
+@pytest.fixture
+def inscription(db_session, student, level, pack_instrument):
+	obj_student = create_student(db_session, student)
+	obj_level = create_level(db_session, **level)
+	return {
+		"student_id": obj_student.id,
+		"level_id": obj_level.id,
+		"registration_date": date.today(),
 	}

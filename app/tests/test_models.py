@@ -40,12 +40,13 @@ def test_teacher_duplicate_data_fail(client, teacher):
 	# la respuesta 404, guardo lo que devuelve la petición en res.
 	res = client.post("/teachers/", json=teacher)
 	# Compruebo el código de estado devuelto por la petición post.
-	assert res.status_code == 404
+	assert res.status_code == 400
 
 def test_teacher_get_fail(client):
 	''' Test para recuperar profesor no creado'''
 	# Le paso el id de un profesor que no esta creado.
 	res = client.get("/teachers/1")
+	print(res.json())
 	assert res.status_code == 404
 
 def test_teacher_get_all(client, db_session):
@@ -233,4 +234,26 @@ def test_level_delete(client, level):
 	res = client.delete("/levels/1")
 	assert res.status_code == 200, f"Error, expected:200, not:{res.status_code} {res.content}"
 	res = client.get("/levels/1")
+	assert res.status_code == 404, "Error delete data"
+
+
+'''Tests for inscriptions'''
+def test_inscriptions_create_get(client, inscription):
+	res = client.post("/inscriptions/", json=inscription)
+	assert res.status_code == 200, f"Error in post, expect: 200, not: {res.status_code}"
+	res = client.get("/inscriptions/1")
+	assert res.status_code == 200, f"Error in get, expect: 200, not: {res.status_code}"
+	data = res.json()
+	for t in inscription.items():
+		assert t in data.items(), f"Error with data: {t}"
+
+def test_inscriptions_get_fail(client):
+	res = client.get("/inscriptions/1")
+	assert res.status_code == 404
+
+def test_inscriptions_delete(client, inscription):
+	client.post("/inscriptions/", json=inscription)
+	res = client.delete("/inscriptions/1")
+	assert res.status_code == 200, f"Error, expected:200, not:{res.status_code} {res.content}"
+	res = client.get("/inscriptions/1")
 	assert res.status_code == 404, "Error delete data"
