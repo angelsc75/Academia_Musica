@@ -41,3 +41,4 @@ python-jose[cryptography]
 passlib[bcrypt]
 python-multipart
 pydantic-settings
+itsdangerous

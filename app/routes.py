@@ -1,15 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-from core.security import create_access_token
+from app import schemas
+from app import crud
+from app.core import security
+from app.core.security import create_access_token, decode_access_token, oauth2_scheme
 from crud import auth
 from models import Student
 from schemas import Token
 from sqlalchemy.orm import Session
 from typing import List
 from decimal import Decimal
-from core.security import oauth2_scheme
-
-from db import get_db
+from app.db import get_db
 from crud.inscriptions_crud import create_inscription, delete_inscription, get_inscriptions, get_inscription, get_inscriptions_by_student, calculate_student_fees, generate_fee_report,update_inscription
 from crud.students_crud import get_students, create_student, delete_student, update_student, get_student
 from crud import teacher_crud, instruments_crud, students_crud
@@ -22,7 +23,6 @@ from schemas import Student, StudentCreate, Inscription, InscriptionCreate, Insc
         Level, LevelCreate, LevelUpdate, Pack, PackCreate, PackUpdate, PacksInstruments, PacksInstrumentsCreate, \
         PacksInstrumentsUpdate, TeachersInstruments, TeachersInstrumentsCreate, TeachersInstrumentsUpdate, \
         UpdateTeacher
-from fastapi import APIRouter
 
 
 
@@ -350,7 +350,12 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         raise HTTPException(status_code=401, detail="Invalid token")
     return payload
 
-@router.get("/", response_model=list[Student])
-def read_students(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
-    students = students_crud.get_students(db, skip=skip, limit=limit)
+@router.get("/", response_model=list[schemas.Student])
+def read_students(
+    skip: int = 0, 
+    limit: int = 100, 
+    db: Session = Depends(get_db), 
+    current_user: schemas.User = Depends(security.get_current_active_user)
+):
+    students = crud.get_students(db, skip=skip, limit=limit)
     return students
