@@ -17,10 +17,6 @@ from schemas import Student, StudentCreate, Inscription, InscriptionCreate, Insc
         PacksInstrumentsUpdate, TeachersInstruments, TeachersInstrumentsCreate, TeachersInstrumentsUpdate, \
         UpdateTeacher
 
-
-
-router = APIRouter()
-
 @router.post("/students/", response_model=Student, tags=["students"])
 def create_students(student: StudentCreate, db: Session = Depends(get_db)):
     return create_student(db=db, student=student)
@@ -129,14 +125,14 @@ def create_teacher(teacher: CreateTeacher, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Ya existe el profesor")
     return teacher
 
-@router.put("/teachers/{teacher_id}", response_model=Teacher)
+@router.put("/teachers/{teacher_id}", response_model=Teacher, tags=["teachers"])
 def update_teacher(teacher_id: int, teacher: UpdateTeacher, db: Session = Depends(get_db)):
     new_teacher = teacher_crud.update_teacher(db, teacher_id, teacher.model_dump())
     if new_teacher is None:
         raise HTTPException(status_code=404, detail="Ningun profesor con ese id")
     return new_teacher
 
-@router.delete("/teachers/{teacher_id}")
+@router.delete("/teachers/{teacher_id}", tags=["teachers"])
 def delete_teacher(teacher_id: int, db: Session = Depends(get_db)):
     if teacher_crud.delete_teacher(db, teacher_id) is False:
         raise HTTPException(status_code=404, detail="Ningun profesor con ese id")
@@ -173,12 +169,12 @@ def update_instrument(instrument_id: int, instrument: UpdateInstrument, db: Sess
         raise HTTPException(status_code=404, detail="Instrumento no encontrado")
     return updated_instrument
 
-@router.delete("/instruments/{instrument_id}", response_model=Instrument, tags=["instruments"])
+@router.delete("/instruments/{instrument_id}", tags=["instruments"])
 def delete_instrument(instrument_id: int, db: Session = Depends(get_db)):
-    deleted = instruments_crud.delete_instrument(db, instrument_id)
-    if not deleted:
+    if instruments_crud.delete_instrument(db, instrument_id) is False:
         raise HTTPException(status_code=404, detail="Instrumento no encontrado")
     return {"message": "Instrumento eliminado correctamente"}
+
 
 @router.get("/instruments/price-range/", response_model=List[Instrument], tags=["instruments"])
 def read_instruments_by_price_range(min_price: Decimal, max_price: Decimal, db: Session = Depends(get_db)):
