@@ -9,6 +9,8 @@ import logging
 from sqlalchemy.exc import SQLAlchemyError
 from fastapi import HTTPException
 
+# Obtener el logger configurado
+logger = logging.getLogger("music_app")
 
 def create_student(db: Session, student: StudentCreate):
     try:
@@ -16,88 +18,86 @@ def create_student(db: Session, student: StudentCreate):
         db.add(db_student)
         db.commit()
         db.refresh(db_student)
-        logging.info("Estudiante creado {db_student} con éxito")
+        logger.info("Estudiante creado con éxito")
         return db_student
     except SQLAlchemyError as e:
         db.rollback()
-        logging.error(f"Error al crear el estudiante {db_student}: {str(e)}")
+        logger.error(f"Error al crear el estudiante: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error de base de datos: {str(e)}")
     except Exception as e:
         db.rollback()
-        logging.error(f"Error inesperado al crear el estudiante {db_student}: {str(e)}")
+        logger.error(f"Error inesperado al crear el estudiante: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
 
 def get_students(db: Session, skip: int = 0, limit: int = 200):
     try:
         students = db.query(Student).offset(skip).limit(limit).all()
-        logging.info(f"Recuperados {len(students)} students")
+        logger.info(f"Recuperados {len(students)} estudiantes")
         return students
     except SQLAlchemyError as e:
-        logging.error(f"Error de base de datos recuperando estudiantes: {str(e)}")
+        logger.error(f"Error de base de datos recuperando estudiantes: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error de base de datos: {str(e)}")
     except Exception as e:
-        logging.error(f"Error inesperado recuperando estudiantes: {str(e)}")
+        logger.error(f"Error inesperado recuperando estudiantes: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
 
 def get_student(db: Session, student_id: int):
     try:
         stmt = select(Student).where(Student.id == student_id)
         result = db.scalars(stmt).first()
-        logging.info(f"Estudiante {result} recuperado con éxito")
+        logger.info("Estudiante recuperado con éxito")
         return result
     except SQLAlchemyError as e:
-        logging.error(f"Error de base de datos recuperando estudiante {result}: {str(e)}")
+        logger.error(f"Error de base de datos recuperando estudiante: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error de base de datos: {str(e)}")
     except Exception as e:
-        logging.error(f"Error inesperado en recuperando estudiante {result}: {str(e)}")
+        logger.error(f"Error inesperado en recuperando estudiante: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
     
 def update_student(db: Session, student_id: int, student_data: dict):
     try:
-        logging.info(f"Iniciando actualización del estudiante con ID: {student_id}")
         db_student = db.query(Student).filter(Student.id == student_id).first()
         if not db_student:
-            logging.info(f"Estudiante con ID {student_id} no encontrado")
+            logger.info("Estudiante no encontrado")
             raise HTTPException(status_code=404, detail="Estudiante no encontrado")
 
         for key, value in student_data.items():
             setattr(db_student, key, value)
         db.commit()
         db.refresh(db_student)
-        logging.info(f"Estudiante con ID {student_id} actualizado con éxito")
+        logger.info("Estudiante actualizado con éxito")
         return db_student
     except SQLAlchemyError as e:
         db.rollback()
-        logging.error(f"Error de base de datos al actualizar estudiante con ID {student_id}: {str(e)}")
+        logger.error(f"Error de base de datos al actualizar estudiante: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error de base de datos: {str(e)}")
     except HTTPException as http_exc:
-        logging.error(f"HTTPException al actualizar estudiante con ID {student_id}: {http_exc.detail}")
+        logger.error(f"HTTPException al actualizar estudiante: {http_exc.detail}")
         raise http_exc
     except Exception as e:
         db.rollback()
-        logging.error(f"Error inesperado al actualizar estudiante con ID {student_id}: {str(e)}")
+        logger.error(f"Error inesperado al actualizar estudiante: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
     
 def delete_student(db: Session, student_id: int):
     try:
-        logging.info(f"Iniciando eliminación del estudiante con ID: {student_id}")
         db_student = db.query(Student).filter(Student.id == student_id).first()
         if not db_student:
-            logging.info(f"Estudiante con ID {student_id} no encontrado")
+            logger.info("Estudiante no encontrado")
             raise HTTPException(status_code=404, detail="Estudiante no encontrado")
 
         db.delete(db_student)
         db.commit()
-        logging.info(f"Estudiante con ID {student_id} eliminado con éxito")
+        logger.info("Estudiante eliminado con éxito")
         return True
     except SQLAlchemyError as e:
         db.rollback()
-        logging.error(f"Error de base de datos al eliminar al estudiante con ID {student_id}: {str(e)}")
+        logger.error(f"Error de base de datos al eliminar al estudiante: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error de base de datos: {str(e)}")
     except HTTPException as http_exc: 
-        logging.error(f"HTTPException al eliminar al estudiante con ID {student_id}: {http_exc.detail}")
+        logger.error(f"HTTPException al eliminar: {http_exc.detail}")
         raise http_exc
     except Exception as e:
         db.rollback()
-        logging.error(f"Error inesperado al eliminar al estudiante con ID {student_id}: {str(e)}")
+        logger.error(f"Error inesperado al eliminar el estudiante: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
