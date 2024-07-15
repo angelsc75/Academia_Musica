@@ -80,19 +80,23 @@ def update_instrument(db: Session, instrument_id: int, name: Optional[str] = Non
 def delete_instrument(db: Session, instrument_id: int) -> bool:
     try:
         instrument = get_instrument(db, instrument_id)
-        if instrument:
-            db.delete(instrument)
-            db.commit()
-            return True
-        return False
+        if not instrument:
+            raise HTTPException(status_code=404, detail="Instrumento no encontrado")
+
+        db.delete(instrument)
+        db.commit()
+        return True
+    except HTTPException as e:
+        logging.error(f"Error HTTP al eliminar el instrumento: {str(e)}")
+        raise
     except SQLAlchemyError as e:
         db.rollback()
         logging.error(f"Error de base de datos al eliminar el instrumento: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error de base de datos: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error de base de datos")
     except Exception as e:
         db.rollback()
         logging.error(f"Error inesperado al eliminar el instrumento: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error inesperado")
 
 def get_instruments_by_price_range(db: Session, min_price: Decimal, max_price: Decimal) -> List[Instrument]:
     try:
