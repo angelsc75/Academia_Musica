@@ -173,12 +173,12 @@ def update_instrument(instrument_id: int, instrument: UpdateInstrument, db: Sess
         raise HTTPException(status_code=404, detail="Instrumento no encontrado")
     return updated_instrument
 
-@router.delete("/instruments/{instrument_id}", response_model=Instrument, tags=["instruments"])
+@router.delete("/instruments/{instrument_id}", tags=["instruments"])
 def delete_instrument(instrument_id: int, db: Session = Depends(get_db)):
-    deleted = instruments_crud.delete_instrument(db, instrument_id)
-    if not deleted:
+    if instruments_crud.delete_instrument(db, instrument_id) is False:
         raise HTTPException(status_code=404, detail="Instrumento no encontrado")
     return {"message": "Instrumento eliminado correctamente"}
+
 
 @router.get("/instruments/price-range/", response_model=List[Instrument], tags=["instruments"])
 def read_instruments_by_price_range(min_price: Decimal, max_price: Decimal, db: Session = Depends(get_db)):
