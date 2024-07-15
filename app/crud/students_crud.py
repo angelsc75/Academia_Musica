@@ -9,9 +9,15 @@ import logging
 from sqlalchemy.exc import SQLAlchemyError
 from fastapi import HTTPException
 
+'''
+Cada función en este código está diseñada para interactuar con la base de datos a través de SQLAlchemy y manejar las operaciones 
+CRUD (crear, leer, actualizar y eliminar) para los estudiantes (Student). Además, se incluyen manejos de errores detallados y 
+logging para registrar las operaciones y posibles fallos.
+'''
 # Obtener el logger configurado
 logger = logging.getLogger("music_app")
 
+# Crear un nuevo estudiante
 def create_student(db: Session, student: StudentCreate):
     try:
         db_student = Student(**student.model_dump())
@@ -29,6 +35,7 @@ def create_student(db: Session, student: StudentCreate):
         logger.error(f"Error inesperado al crear el estudiante: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
 
+# Listar todos los estudiantes
 def get_students(db: Session, skip: int = 0, limit: int = 200):
     try:
         students = db.query(Student).offset(skip).limit(limit).all()
@@ -41,6 +48,7 @@ def get_students(db: Session, skip: int = 0, limit: int = 200):
         logger.error(f"Error inesperado recuperando estudiantes: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
 
+# Consultar estudiante por ID
 def get_student(db: Session, student_id: int):
     try:
         stmt = select(Student).where(Student.id == student_id)
@@ -53,7 +61,8 @@ def get_student(db: Session, student_id: int):
     except Exception as e:
         logger.error(f"Error inesperado en recuperando estudiante: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
-    
+
+# Actualizar estudiante  
 def update_student(db: Session, student_id: int, student_data: dict):
     try:
         db_student = db.query(Student).filter(Student.id == student_id).first()
@@ -79,6 +88,7 @@ def update_student(db: Session, student_id: int, student_data: dict):
         logger.error(f"Error inesperado al actualizar estudiante: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
     
+# Eliminar estudiante
 def delete_student(db: Session, student_id: int):
     try:
         db_student = db.query(Student).filter(Student.id == student_id).first()

@@ -6,9 +6,16 @@ from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from fastapi import HTTPException
 import logging
 
+
+'''
+Cada función en este código está diseñada para interactuar con la base de datos a través de SQLAlchemy y manejar las operaciones 
+CRUD (crear, leer, actualizar y eliminar) para los instrumentos (Instrument). Además, se incluyen manejos de errores detallados y 
+logging para registrar las operaciones y posibles fallos.
+'''
 # Obtener el logger configurado
 logger = logging.getLogger("music_app")
 
+# Crear un nuevo instrumento
 def create_instrument(db: Session, name: str, price: Decimal) -> Instrument:
     new_instrument = Instrument(name=name, price=price)
     db.add(new_instrument)
@@ -32,6 +39,7 @@ def create_instrument(db: Session, name: str, price: Decimal) -> Instrument:
         logger.error(f"Error inesperado al crear el instrumento: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
 
+# Consultar instrumento por ID
 def get_instrument(db: Session, instrument_id: int) -> Optional[Instrument]:
     try:
         logger.info("Instrumento recuperado con éxito")
@@ -43,7 +51,7 @@ def get_instrument(db: Session, instrument_id: int) -> Optional[Instrument]:
         logger.error(f"Error inesperado al obtener el instrumento: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
 
-
+# Consultar todos los instrumentos
 def get_all_instruments(db: Session) -> List[Instrument]:
     try:
         logger.info("Todos los instrumentos recuperados con éxito")
@@ -55,6 +63,7 @@ def get_all_instruments(db: Session) -> List[Instrument]:
         logger.error(f"Error inesperado al obtener todos los instrumentos: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
 
+# Actualizar un instrumento
 def update_instrument(db: Session, instrument_id: int, name: Optional[str] = None, price: Optional[Decimal] = None) -> Optional[Instrument]:
     try:
         instrument = get_instrument(db, instrument_id)
@@ -83,6 +92,7 @@ def update_instrument(db: Session, instrument_id: int, name: Optional[str] = Non
         logger.error(f"Error inesperado al actualizar el instrumento: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
 
+# Eliminar un instrumento
 def delete_instrument(db: Session, instrument_id: int) -> bool:
     try:
         instrument = get_instrument(db, instrument_id)
@@ -102,6 +112,7 @@ def delete_instrument(db: Session, instrument_id: int) -> bool:
         logger.error(f"Error inesperado al eliminar el instrumento: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
 
+# Consultar instrumentos por rango de precios
 def get_instruments_by_price_range(db: Session, min_price: Decimal, max_price: Decimal) -> List[Instrument]:
     try:
         logger.info(f"Instrumentos en el rango de precios {min_price} - {max_price} recuperados con éxito")
@@ -113,6 +124,7 @@ def get_instruments_by_price_range(db: Session, min_price: Decimal, max_price: D
         logger.error(f"Error inesperado al obtener instrumentos por rango de precios {min_price} - {max_price}: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
 
+# Consultar instrumentos por profesor
 def get_instruments_by_teacher(db: Session, teacher_id: int) -> List[Instrument]:
     try:
         logger.info("Instrumentos por profesor recuperados con éxito")
@@ -124,6 +136,7 @@ def get_instruments_by_teacher(db: Session, teacher_id: int) -> List[Instrument]
         logger.error(f"Error inesperado al obtener instrumentos por profesor: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
 
+# Consultar instrumentos por pack
 def get_instruments_by_pack(db: Session, pack_id: int) -> List[Instrument]:
     try:
         logger.info("Instrumentos asociados al pack recuperados con éxito")

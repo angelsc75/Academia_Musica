@@ -5,6 +5,11 @@ from fastapi import HTTPException
 import logging
 from models import TeachersInstruments, Instrument, Teacher
 
+'''
+Cada función en este código está diseñada para interactuar con la base de datos a través de SQLAlchemy y manejar las operaciones 
+CRUD (crear, leer, actualizar y eliminar) para los instrumentos por profesor (TeachersInstruments). Además, se incluyen manejos de errores detallados y 
+logging para registrar las operaciones y posibles fallos.
+'''
 # Obtener el logger configurado
 logger = logging.getLogger("music_app")
 
@@ -87,7 +92,8 @@ def create_teachers_instruments(db: Session, teacher_id: int, instrument_id: int
         db.rollback()
         logger.error(f"Error inesperado al crear relación profesor-instrumento: {str(e)}")
         raise HTTPException(status_code=500, detail="Error inesperado")
-
+    
+# Actualizar relación profesor por instrumento
 def update_teachers_instruments(db: Session, teachers_instruments_id: int, **kwargs):
     try:
         # Verificar si la relación existe
@@ -130,6 +136,7 @@ def update_teachers_instruments(db: Session, teachers_instruments_id: int, **kwa
         logger.error(f"Error inesperado al actualizar relación profesor-instrumento: {str(e)}")
         raise HTTPException(status_code=500, detail="Error inesperado")
 
+# Eliminar relación profesor por instrumento
 def delete_teacher_instruments(db: Session, teacher_instrument_id: int) -> bool:
     # Verificar si la relación existe
     teachers_instruments = db.get(TeachersInstruments, teacher_instrument_id)

@@ -6,9 +6,15 @@ import logging
 from typing import Optional, List
 from models import Pack
 
+'''
+Cada función en este código está diseñada para interactuar con la base de datos a través de SQLAlchemy y manejar las operaciones 
+CRUD (crear, leer, actualizar y eliminar) para los pack (Pack). Además, se incluyen manejos de errores detallados y 
+logging para registrar las operaciones y posibles fallos.
+''' 
 # Obtener el logger configurado
 logger = logging.getLogger("music_app")
 
+# Extraer pack por ID de pack
 def get_pack(db: Session, pack_id: int) -> Optional[Pack]:
     try:
         stmt = select(Pack).where(Pack.id == pack_id)
@@ -63,6 +69,7 @@ def create_pack(db: Session, pack: str, discount_1: float, discount_2: float) ->
         logger.error(f"Error inesperado al crear el pack: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
 
+# Actualizar pack
 def update_pack(db: Session, pack_id: int, **kwargs) -> Optional[Pack]:
     try:
         pack = db.get(Pack, pack_id)
@@ -89,6 +96,7 @@ def update_pack(db: Session, pack_id: int, **kwargs) -> Optional[Pack]:
         logger.error(f"Error inesperado al actualizar el pack: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
 
+#  Eliminar pack
 def delete_pack(db: Session, pack_id: int) -> bool:
     try:
         pack = db.get(Pack, pack_id)

@@ -6,9 +6,16 @@ import logging
 from models import Teacher
 from typing import Optional
 
+'''
+Cada función en este código está diseñada para interactuar con la base de datos a través de SQLAlchemy y manejar las operaciones 
+CRUD (crear, leer, actualizar y eliminar) para los profesores (Teacher). Además, se incluyen manejos de errores detallados y 
+logging para registrar las operaciones y posibles fallos.
+'''
+
 # Obtener el logger configurado
 logger = logging.getLogger("music_app")
 
+# Consultar profesor por ID
 def get_teacher(db: Session, teacher_id: int) -> Teacher:
     try:
         stmt = select(Teacher).where(Teacher.id == teacher_id)
@@ -24,6 +31,7 @@ def get_teacher(db: Session, teacher_id: int) -> Teacher:
         logger.error(f"Error inesperado al obtener el profesor: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
 
+# Listar todos los profesores
 def get_teachers(db: Session):
     try:
         stmt = select(Teacher)
@@ -36,6 +44,7 @@ def get_teachers(db: Session):
         logger.error(f"Error inesperado al obtener los profesores: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
 
+# Crear un nuevo profesor
 def create_teacher(db: Session, teacher: Teacher) -> Teacher:
     stmt = select(Teacher).where(
         Teacher.first_name == teacher.first_name,
@@ -68,6 +77,7 @@ def create_teacher(db: Session, teacher: Teacher) -> Teacher:
         logger.error(f"Error inesperado al crear el profesor: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
 
+# Actualizar un profesor
 def update_teacher(db: Session, teacher_id: int, new_teacher: dict) -> Teacher:
     try:
         teacher = get_teacher(db, teacher_id)
@@ -91,6 +101,7 @@ def update_teacher(db: Session, teacher_id: int, new_teacher: dict) -> Teacher:
         logger.error(f"Error inesperado al actualizar el profesor: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
 
+# Eliminar un profesor
 def delete_teacher(db: Session, teacher_id: int) -> bool:
     try:
         teacher = get_teacher(db, teacher_id)

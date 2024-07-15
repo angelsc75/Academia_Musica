@@ -7,6 +7,12 @@ import logging
 from models import PacksInstruments, Pack, Instrument
 
 
+'''
+Cada función en este código está diseñada para interactuar con la base de datos a través de SQLAlchemy y manejar las operaciones 
+CRUD (crear, leer, actualizar y eliminar) para los packs de intrumentos (PacksInstruments). Además, se incluyen manejos de errores detallados y 
+logging para registrar las operaciones y posibles fallos.
+'''
+
 # Obtener el logger configurado
 logger = logging.getLogger("music_app")
 
@@ -87,6 +93,7 @@ def create_packs_instruments(db: Session, instrument_id: int, packs_id: int):
         logging.error(f"Error inesperado al crear la combinación de instrumento y paquete: {str(e)}")
         raise HTTPException(status_code=500, detail="Error inesperado")
 
+# Actualizar pack de instrumentos
 def update_packs_instruments(db: Session, packs_instruments_id: int, **kwargs):
     try:
         # Verificar si la combinación de paquete e instrumento existe
@@ -131,6 +138,7 @@ def update_packs_instruments(db: Session, packs_instruments_id: int, **kwargs):
         logging.error(f"Error inesperado al actualizar la combinación de paquete e instrumento: {str(e)}")
         raise HTTPException(status_code=500, detail="Error inesperado")
 
+# Eliminar packs de instrumentos
 def delete_packs_instruments(db: Session, packs_instruments_id: int) -> bool:
     try:
         # Verificar si el pack de instrumentos existe

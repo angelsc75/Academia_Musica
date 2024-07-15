@@ -17,6 +17,14 @@ from schemas import Student, StudentCreate, Inscription, InscriptionCreate, Insc
         PacksInstrumentsUpdate, TeachersInstruments, TeachersInstrumentsCreate, TeachersInstrumentsUpdate, \
         UpdateTeacher
 
+'''
+Este código define una API utilizando FastAPI para manejar operaciones CRUD (Crear, Leer, Actualizar, Eliminar) relacionadas 
+con estudiantes, inscripciones, profesores, instrumentos, niveles, packs y asociaciones entre estas entidades en una base de datos.
+La interacción con la base de datos se maneja a través de SQLAlchemy.
+'''
+
+router = APIRouter()
+
 @router.post("/students/", response_model=Student, tags=["students"])
 def create_students(student: StudentCreate, db: Session = Depends(get_db)):
     return create_student(db=db, student=student)
