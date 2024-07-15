@@ -10,23 +10,36 @@ from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from fastapi import HTTPException
 import logging
 
+'''
+Cada función en este código está diseñada para interactuar con la base de datos a través de SQLAlchemy y manejar las operaciones 
+CRUD (crear, leer, actualizar y eliminar) para las inscripciones (Inscription). Además, se incluyen manejos de errores detallados y 
+logging para registrar las operaciones y posibles fallos.
+Se calcula tarifas por alumno y por inscripción y se genera un informe de facturación
+'''
+# Obtener el logger configurado
+logger = logging.getLogger("music_app")
+
+# Crear una nueva inscripción
 def create_inscription(db: Session, inscription: InscriptionCreate):
-    # Check if the student exists
+    # Comprobar si exite el estudiante
     student = db.query(Student).filter(Student.id == inscription.student_id).first()
     if not student:
+        logger.warning("Estudiante no encontrado")
         raise HTTPException(status_code=404, detail="Estudiante no encontrado")
 
-    # Check if the instrument exists
+    # Comprobar si exite el instrumento
     instrument = db.query(Instrument).filter(Instrument.id == inscription.instrument_id).first()
     if not instrument:
+        logger.warning("Instrumento no encontrado")
         raise HTTPException(status_code=404, detail="Instrumento no encontrado")
 
-    # Check if the level exists
+    # Comprobar si exite el nivel
     level = db.query(Level).filter(Level.id == inscription.level_id).first()
     if not level:
+        logger.warning("Nivel no encontrado")
         raise HTTPException(status_code=404, detail="Nivel no encontrado")
 
-    # Check if the inscription already exists
+    # Comprueba si la inscripción ya existe.
     existing_inscription = db.query(Inscription).filter(
         Inscription.student_id == inscription.student_id,
         Inscription.level_id == inscription.level_id,
@@ -34,46 +47,51 @@ def create_inscription(db: Session, inscription: InscriptionCreate):
     ).first()
     
     if existing_inscription:
+        logger.warning("Inscripción ya existe")
         raise HTTPException(status_code=400, detail="Inscripción ya existe")
 
-    # Create a new inscription
+    # Crear una nueva inscripción
     db_inscription = Inscription(**inscription.model_dump())
     
     try:
         db.add(db_inscription)
         db.commit()
         db.refresh(db_inscription)
+        logger.info("Inscripción creada con éxito")
         return db_inscription
     except IntegrityError:
         db.rollback()
-        logging.error(f"Error de integridad al crear la inscripción: {inscription}")
+        logger.error("Error de integridad al crear la inscripción")
         raise HTTPException(status_code=400, detail="Error de integridad al crear la inscripción")
     except SQLAlchemyError as e:
         db.rollback()
-        logging.error(f"Error de base de datos al crear la inscripción: {str(e)}")
+        logger.error(f"Error de base de datos al crear la inscripción: {str(e)}")
         raise HTTPException(status_code=500, detail="Error en la base de datos")
     except Exception as e:
         db.rollback()
-        logging.error(f"Error inesperado al crear la inscripción: {str(e)}")
+        logger.error(f"Error inesperado al crear la inscripción: {str(e)}")
         raise HTTPException(status_code=500, detail="Error inesperado")
 
+# Consultar Inscripción por ID
 def get_inscription(db: Session, inscription_id: int):
     try:
         stmt = select(Inscription).where(Inscription.id == inscription_id)
         result = db.scalars(stmt).first()
         
         if result is None:
+            logger.warning("Inscripción no encontrada")
             raise HTTPException(status_code=404, detail="Inscripción no encontrada")
         
         return result
 
     except SQLAlchemyError as e:
-        logging.error(f"Error al obtener la inscripción con ID {inscription_id}: {str(e)}")
+        logger.error(f"Error al obtener la inscripción: {str(e)}")
         raise HTTPException(status_code=500, detail="Error en la base de datos")
     except Exception as e:
-        logging.error(f"Error inesperado al obtener la inscripción: {str(e)}")
+        logger.error(f"Error inesperado al obtener la inscripción: {str(e)}")
         raise HTTPException(status_code=500, detail="Error inesperado")
 
+# Consultar todas las inscripciones
 def get_inscriptions(db: Session):
     try:
         inscription_query = (
@@ -100,24 +118,26 @@ def get_inscriptions(db: Session):
                 'registration_date': inscription.registration_date.strftime('%Y-%m-%d'),
                 'instrument_price': float(instrument.price)
             })
-
+        logger.info(f"Recuperadas con éxito {len(inscriptions)} inscripciones")
         return inscriptions
 
     except SQLAlchemyError as e:
-        logging.error(f"Error al obtener inscripciones: {str(e)}")
+        logger.error(f"Error al obtener inscripciones: {str(e)}")
         raise HTTPException(status_code=500, detail="Error en la base de datos")
     except Exception as e:
-        logging.error(f"Error inesperado al obtener inscripciones: {str(e)}")
+        logger.error(f"Error inesperado al obtener inscripciones: {str(e)}")
         raise HTTPException(status_code=500, detail="Error inesperado")
 
+# Consultar inscripciones por id de estudiante
 def get_inscriptions_by_student(db: Session, student_id: int):
     try:
-        # Check if the student exists
+        # Comprobar si el estudiante existe
         student = db.query(Student).filter(Student.id == student_id).first()
         if not student:
+            logger.warning("Estudiante no encontrado")
             raise HTTPException(status_code=404, detail="Estudiante no encontrado")
 
-        # Query inscriptions for the student
+        # Consulta de inscripciones para el estudiane
         inscription_query = (
             db.query(
                 Inscription,
@@ -143,101 +163,113 @@ def get_inscriptions_by_student(db: Session, student_id: int):
                 'registration_date': inscription.registration_date.strftime('%Y-%m-%d'),
                 'instrument_price': float(instrument.price)  
             })
-
+        logger.info("Inscripciones para el estudiante obtenidas con éxito")
         return inscriptions
 
     except SQLAlchemyError as e:
-        logging.error(f"Error al obtener inscripciones para el estudiante con ID {student_id}: {str(e)}")
+        logger.error(f"Error al obtener inscripciones para el estudiante: {str(e)}")
         raise HTTPException(status_code=500, detail="Error en la base de datos")
     except HTTPException:
         raise  # Re-raise HTTPException to maintain status code and detail
     except Exception as e:
-        logging.error(f"Error inesperado al obtener inscripciones: {str(e)}")
+        logger.error(f"Error inesperado al obtener inscripciones: {str(e)}")
         raise HTTPException(status_code=500, detail="Error inesperado")
 
-
+# Actualizar una inscripción
 def update_inscription(db: Session, inscription_id: int, inscription_data: dict):
     try:
-        # Check if the inscription exists
+        # Comprueba si la inscripción existe.
         db_inscription = db.query(Inscription).filter(Inscription.id == inscription_id).first()
         if not db_inscription:
+            logger.warning("Inscripción no encontrada")
             raise HTTPException(status_code=404, detail="Inscripción no encontrada")
 
-        # Check if the student exists
+        # Comprueba si el estudiante existe.
         if 'student_id' in inscription_data:
             student = db.query(Student).filter(Student.id == inscription_data['student_id']).first()
             if not student:
+                logger.warning("Estudiante no encontrado")
                 raise HTTPException(status_code=404, detail="Estudiante no encontrado")
 
-        # Check if the instrument exists
+        # Comprueba si el instrumento existe.
         if 'instrument_id' in inscription_data:
             instrument = db.query(Instrument).filter(Instrument.id == inscription_data['instrument_id']).first()
             if not instrument:
+                logger.warning("Instrumento no encontrado")
                 raise HTTPException(status_code=404, detail="Instrumento no encontrado")
 
-        # Check if the level exists
+        # Comprueba si el nivel existe.
         if 'level_id' in inscription_data:
             level = db.query(Level).filter(Level.id == inscription_data['level_id']).first()
             if not level:
+                logger.warning("Nivel no encontrado")
                 raise HTTPException(status_code=404, detail="Nivel no encontrado")
 
-        # Update the inscription
+        # Actualiza la inscripción
         for key, value in inscription_data.items():
             setattr(db_inscription, key, value)
 
         db.commit()
         db.refresh(db_inscription)
+        logger.info("Inscripción actualizada con éxito")
         return db_inscription
 
     except SQLAlchemyError as e:
         db.rollback()
-        logging.error(f"Error de base de datos al actualizar la inscripción {inscription_id}: {str(e)}")
+        logger.error(f"Error de base de datos al actualizar la inscripción: {str(e)}")
         raise HTTPException(status_code=500, detail="Error en la base de datos")
     except Exception as e:
         db.rollback()
-        logging.error(f"Error inesperado al actualizar la inscripción: {str(e)}")
+        logger.error(f"Error inesperado al actualizar la inscripción: {str(e)}")
         raise HTTPException(status_code=500, detail="Error inesperado")
 
+# Eliminar una inscripción
 def delete_inscription(db: Session, inscription_id: int) -> bool:
     try:
         db_inscription = db.query(Inscription).filter(Inscription.id == inscription_id).first()
         
         if not db_inscription:
+            logger.warning("Inscripción no encontrada")
             raise HTTPException(status_code=404, detail="Inscripción no encontrada")
 
         db.delete(db_inscription)
         db.commit()
+        logger.info("Inscripción eliminada con éxito")
         return True
     
     except SQLAlchemyError as e:
         db.rollback()
-        logging.error(f"Error de base de datos al eliminar la inscripción: {str(e)}")
+        logger.error(f"Error de base de datos al eliminar la inscripción: {str(e)}")
         raise HTTPException(status_code=500, detail="Error en la base de datos")
     
     except Exception as e:
         db.rollback()
-        logging.error(f"Error inesperado al eliminar la inscripción: {str(e)}")
+        logger.error(f"Error inesperado al eliminar la inscripción: {str(e)}")
         raise HTTPException(status_code=500, detail="Error inesperado")
 
+# Calcular tarifas de estudiantes
 def calculate_student_fees(db: Session, student_id: int) -> Decimal:
     try:
-        # Check if the student exists
+        # Comprueba si el estudante existe
         student = db.query(Student).filter(Student.id == student_id).first()
         if not student:
+            logger.warning("Estudiante no encontrado")
             raise HTTPException(status_code=404, detail="Estudiante no encontrado")
 
         # Retrieve inscriptions for the student
         inscriptions = db.query(Inscription).filter(Inscription.student_id == student_id).all()
         if not inscriptions:
+            logger.info("No se encontraron inscripciones para el estudiante")
             return Decimal('0.00')
 
         total_fee = Decimal('0.00')
         pack_inscriptions = {}
 
-        # Calculate fees for each inscription
+        # Calcular tarifa por cada inscripción
         for inscription in inscriptions:
             instrument = inscription.level.instrument
             if not instrument:
+                logger.warning("Instrumento no encontrado para la inscripción")
                 raise HTTPException(status_code=404, detail="Instrumento no encontrado")
                 
             pack = db.query(Pack).join(PacksInstruments).filter(PacksInstruments.instrument_id == instrument.id).first()
@@ -263,24 +295,23 @@ def calculate_student_fees(db: Session, student_id: int) -> Decimal:
 
                 total_fee += price
 
-        # Apply family discount if applicable
+        # Aplicar descuento familiar
         if student.family_id:
             total_fee *= Decimal('0.90')
 
         final_fee = total_fee.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        logger.info("Tarifas calculadas con éxito")        
         return final_fee
 
     except SQLAlchemyError as e:
-        logging.error(f"Error de base de datos al calcular las tarifas: {str(e)}")
+        logger.error(f"Error de base de datos al calcular las tarifas: {str(e)}")
         raise HTTPException(status_code=500, detail="Error en la base de datos")
 
     except Exception as e:
-        logging.error(f"Error inesperado al calcular las tarifas: {str(e)}")
+        logger.error(f"Error inesperado al calcular las tarifas: {str(e)}")
         raise HTTPException(status_code=500, detail="Error inesperado")
 
-
-
-
+# Generar informe de tarifas
 def generate_fee_report(db: Session):
     try:
         student_query = (
@@ -297,7 +328,7 @@ def generate_fee_report(db: Session):
             try:
                 fee_value = calculate_student_fees(db, student.id)
             except HTTPException as e:
-                logging.warning(f"Skipping student {student.id}: {str(e.detail)}")
+                logger.warning("Omitiendo estudiante debido a error: {e.detail}")
                 continue  # Skip this student if there's an issue calculating fees
             
             report.append({
@@ -312,9 +343,9 @@ def generate_fee_report(db: Session):
         return report
 
     except SQLAlchemyError as e:
-        logging.error(f"Error de base de datos al generar el informe de tarifas: {str(e)}")
+        logger.error(f"Error de base de datos al generar el informe de tarifas: {str(e)}")
         raise HTTPException(status_code=500, detail="Error en la base de datos")
 
     except Exception as e:
-        logging.error(f"Error inesperado al generar el informe de tarifas: {str(e)}")
+        logger.error(f"Error inesperado al generar el informe de tarifas: {str(e)}")
         raise HTTPException(status_code=500, detail="Error inesperado")

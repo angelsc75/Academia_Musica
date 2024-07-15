@@ -6,31 +6,45 @@ import logging
 from models import Teacher
 from typing import Optional
 
+'''
+Cada función en este código está diseñada para interactuar con la base de datos a través de SQLAlchemy y manejar las operaciones 
+CRUD (crear, leer, actualizar y eliminar) para los profesores (Teacher). Además, se incluyen manejos de errores detallados y 
+logging para registrar las operaciones y posibles fallos.
+'''
+
+# Obtener el logger configurado
+logger = logging.getLogger("music_app")
+
+# Consultar profesor por ID
 def get_teacher(db: Session, teacher_id: int) -> Teacher:
     try:
         stmt = select(Teacher).where(Teacher.id == teacher_id)
         result = db.scalars(stmt).first()
         if result is None:
+            logger.info("Profesor no encontrado")
             raise HTTPException(status_code=404, detail="Profesor no encontrado")
         return result
     except SQLAlchemyError as e:
-        logging.error(f"Error de base de datos al obtener el profesor: {str(e)}")
+        logger.error(f"Error de base de datos al obtener el profesor: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error de base de datos: {str(e)}")
     except Exception as e:
-        logging.error(f"Error inesperado al obtener el profesor: {str(e)}")
+        logger.error(f"Error inesperado al obtener el profesor: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
 
+# Listar todos los profesores
 def get_teachers(db: Session):
     try:
         stmt = select(Teacher)
+        logger.info("Todos los profesores recuperados con éxito")
         return db.scalars(stmt).all()
     except SQLAlchemyError as e:
-        logging.error(f"Error de base de datos al obtener los profesores: {str(e)}")
+        logger.error(f"Error de base de datos al obtener los profesores: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error de base de datos: {str(e)}")
     except Exception as e:
-        logging.error(f"Error inesperado al obtener los profesores: {str(e)}")
+        logger.error(f"Error inesperado al obtener los profesores: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
 
+# Crear un nuevo profesor
 def create_teacher(db: Session, teacher: Teacher) -> Teacher:
     stmt = select(Teacher).where(
         Teacher.first_name == teacher.first_name,
@@ -38,6 +52,7 @@ def create_teacher(db: Session, teacher: Teacher) -> Teacher:
     )
     result = db.execute(stmt).scalars().first()
     if result is not None:
+        logger.info("Profesor ya existente")
         raise HTTPException(status_code=400, detail="Profesor ya existente")
 
     new_teacher = Teacher(
@@ -51,16 +66,18 @@ def create_teacher(db: Session, teacher: Teacher) -> Teacher:
     try:
         db.commit()
         db.refresh(new_teacher)
+        logger.info("Profesor creado con éxito")
         return new_teacher
     except SQLAlchemyError as e:
         db.rollback()
-        logging.error(f"Error de base de datos al crear el profesor: {str(e)}")
+        logger.error(f"Error de base de datos al crear el profesor: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error de base de datos: {str(e)}")
     except Exception as e:
         db.rollback()
-        logging.error(f"Error inesperado al crear el profesor: {str(e)}")
+        logger.error(f"Error inesperado al crear el profesor: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
 
+# Actualizar un profesor
 def update_teacher(db: Session, teacher_id: int, new_teacher: dict) -> Teacher:
     try:
         teacher = get_teacher(db, teacher_id)
@@ -70,31 +87,35 @@ def update_teacher(db: Session, teacher_id: int, new_teacher: dict) -> Teacher:
 
         db.commit()
         db.refresh(teacher)
+        logger.info("Profesor actualizado con éxito")
         return teacher
     except SQLAlchemyError as e:
         db.rollback()
-        logging.error(f"Error de base de datos al actualizar el profesor: {str(e)}")
+        logger.error(f"Error de base de datos al actualizar el profesor: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error de base de datos: {str(e)}")
     except HTTPException as http_exc:
+        logger.error(f"HTTPException al actualizar el profesor: {http_exc.detail}")
         raise http_exc
     except Exception as e:
         db.rollback()
-        logging.error(f"Error inesperado al actualizar el profesor: {str(e)}")
+        logger.error(f"Error inesperado al actualizar el profesor: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
 
+# Eliminar un profesor
 def delete_teacher(db: Session, teacher_id: int) -> bool:
     try:
         teacher = get_teacher(db, teacher_id)
         db.delete(teacher)
         db.commit()
+        logger.info("Profesor eliminado con éxito")
         return True
     except SQLAlchemyError as e:
         db.rollback()
-        logging.error(f"Error de base de datos al eliminar el profesor: {str(e)}")
+        logger.error(f"Error de base de datos al eliminar el profesor: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error de base de datos: {str(e)}")
     except HTTPException as http_exc:
         raise http_exc
     except Exception as e:
         db.rollback()
-        logging.error(f"Error inesperado al eliminar el profesor: {str(e)}")
+        logger.error(f"Error inesperado al eliminar el profesor: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")

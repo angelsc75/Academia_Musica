@@ -17,7 +17,15 @@ from schemas import Student, StudentCreate, Inscription, InscriptionCreate, Insc
         PacksInstrumentsUpdate, TeachersInstruments, TeachersInstrumentsCreate, TeachersInstrumentsUpdate, \
         UpdateTeacher
 
+<<<<<<< HEAD
 
+=======
+'''
+Este código define una API utilizando FastAPI para manejar operaciones CRUD (Crear, Leer, Actualizar, Eliminar) relacionadas 
+con estudiantes, inscripciones, profesores, instrumentos, niveles, packs y asociaciones entre estas entidades en una base de datos.
+La interacción con la base de datos se maneja a través de SQLAlchemy.
+'''
+>>>>>>> origin/emma_logs
 
 router = APIRouter()
 
@@ -317,4 +325,3 @@ def delete_teachers_instrument(teachers_instruments_id: int, db: Session = Depen
     if not success:
         raise HTTPException(status_code=404, detail="Asociación de profesor e instrumento no encontrada")
     return success
-
