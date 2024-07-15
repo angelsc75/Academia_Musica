@@ -5,9 +5,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from models import Base, Instrument
+from models import Base
 from db import get_db
 from main import app
+from crud.instruments_crud import create_instrument
 
 
 DATABASE_URL_TEST = "sqlite:///:memory"
@@ -64,4 +65,12 @@ def instrument():
 	return {
 		"name": "Piano",
 		"price": 35
+	}
+
+@pytest.fixture
+def level(db_session, instrument):
+	instr = create_instrument(db_session, **instrument)
+	return {
+		"instruments_id": instr.id,
+		"level": "Básico"
 	}

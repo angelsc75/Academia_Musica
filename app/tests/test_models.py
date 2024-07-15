@@ -1,4 +1,4 @@
-from models import Teacher, Student, Instrument
+from models import Teacher, Student, Instrument, Level
 
 '''Tests
 client: fixture que permite hacer las peticiones http.
@@ -192,49 +192,45 @@ def test_instrument_delete(client, instrument):
 
 '''Tests for Levels'''
 
-def test_level_create_get(client, instrument):
-	client.post("/instruments/", json=instrument)
-	res = client.post("/levels/", json={"instruments_id": 1, "level": "Básico"})
+def test_level_create_get(client, level):
+	res = client.post("/levels/", json=level)
 	assert res.status_code == 200, f"Error in post, expect: 200, not: {res.status_code}"
 	res = client.get("/levels/1")
 	assert res.status_code == 200, f"Error in get, expect: 200, not: {res.status_code}"
 	data = res.json()
-	print("data: \n", data)
 	assert data["instruments_id"] == 1
-	assert data["level"] == "Básico"
+	assert data["level"] == level["level"]
 
-def test_level_duplicate_data_fail(client, instrument):
-	client.post("/instruments/", json=instrument)
-	instr = client.get("/instruments/1").json()
-	level_data = {"instruments_id": instr["id"], "level": "Básico"}
-	client.post("/levels/", json=level_data)
-	res = client.post("/levels/", json=level_data)
+def test_level_duplicate_data_fail(client, level):
+	client.post("/levels/", json=level)
+	res = client.post("/levels/", json=level)
 	assert res.status_code == 400
 
-# def test_level_get_fail(client):
-# 	res = client.get("/instruments/1")
-# 	assert res.status_code == 404
+def test_level_get_fail(client):
+	res = client.get("/levels/1")
+	assert res.status_code == 404
 
-# def test_level_get_all(client, db_session):
-# 	for i in range(3):
-# 		instrument = Instrument(name="instrument" + str(i), price=40)
-# 		db_session.add(instrument)
-# 		db_session.commit()
-# 	res = client.get("/instruments/")
-# 	assert res.status_code == 200, f"Error, expected:200, not:{res.status_code}"
-# 	data = res.json()
-# 	assert len(data) == 3, f"Error, expected quantity: 3, not: {len(data)}"
+def test_level_get_all(client, instrument, db_session):
+	instr = client.post("/instruments/", json=instrument).json()
+	for i in range(3):
+		level = Level(instr["id"], "Test" + str(i))
+		db_session.add(level)
+		db_session.commit()
+	res = client.get("/levels/")
+	assert res.status_code == 200, f"Error, expected:200, not:{res.status_code}"
+	data = res.json()
+	assert len(data) == 3, f"Error, expected quantity: 3, not: {len(data)}"
 
-# def test_level_update(client, instrument):
-# 	client.post("/instruments/", json=instrument)
-# 	res = client.put("/instruments/1", json={'price': 30})
-# 	assert res.status_code == 200, f"Error, expected:200, not:{res.status_code}"
-# 	data = res.json()
-# 	assert data["price"] == 30, "Error update data"
+def test_level_update(client, level):
+	client.post("/levels/", json=level)
+	res = client.put("/levels/1", json={'level': "Intermedio"})
+	assert res.status_code == 200, f"Error, expected:200, not:{res.status_code}"
+	data = res.json()
+	assert data["level"] == "Intermedio", "Error update data"
 
-# def test_level_delete(client, instrument):
-# 	client.post("/instruments/", json=instrument)
-# 	res = client.delete("/instruments/1")
-# 	assert res.status_code == 200, f"Error, expected:200, not:{res.status_code} {res.content}"
-# 	res = client.get("/instruments/1")
-# 	assert res.status_code == 404, "Error delete data"
+def test_level_delete(client, level):
+	client.post("/levels/", json=level)
+	res = client.delete("/levels/1")
+	assert res.status_code == 200, f"Error, expected:200, not:{res.status_code} {res.content}"
+	res = client.get("/levels/1")
+	assert res.status_code == 404, "Error delete data"
