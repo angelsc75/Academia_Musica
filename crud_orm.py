@@ -554,7 +554,3 @@ if __name__ == "__main__":
     # Close the session
     session.close()
 
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/emma_logs

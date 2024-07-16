@@ -23,7 +23,7 @@ def get_level(db: Session, level_id: int) -> Optional[Level]:
         if result is None:
             # Si no se encuentra el nivel, registrar un mensaje y lanzar una excepción HTTP 404
             logger.info("Nivel no encontrado")
-            raise HTTPException(status_code=404, detail="Nivel no encontrado")
+            return None
         # Si se encuentra el nivel, registrar un mensaje y devolver el resultado
         logger.info("Nivel recuperado con éxito")
         return result
@@ -66,7 +66,7 @@ def create_level(db: Session, instruments_id: int, level: str) -> Optional[Level
         result = db.execute(stmt).scalars().first()
         if result:
             logger.info("Nivel ya existente para el instrumento")
-            raise HTTPException(status_code=400, detail="Nivel ya existente")
+            return None
 
         # Crear un nuevo nivel
         new_level = Level(

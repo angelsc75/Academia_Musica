@@ -80,7 +80,7 @@ def get_inscription(db: Session, inscription_id: int):
         
         if result is None:
             logger.warning("Inscripción no encontrada")
-            raise HTTPException(status_code=404, detail="Inscripción no encontrada")
+            return None
         
         return result
 

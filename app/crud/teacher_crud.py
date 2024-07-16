@@ -22,7 +22,7 @@ def get_teacher(db: Session, teacher_id: int) -> Teacher:
         result = db.scalars(stmt).first()
         if result is None:
             logger.info("Profesor no encontrado")
-            raise HTTPException(status_code=404, detail="Profesor no encontrado")
+            return None
         return result
     except SQLAlchemyError as e:
         logger.error(f"Error de base de datos al obtener el profesor: {str(e)}")
