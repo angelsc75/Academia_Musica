@@ -21,7 +21,7 @@ def get_pack(db: Session, pack_id: int) -> Optional[Pack]:
         result = db.scalars(stmt).first()
         if result is None:
             logger.info("Pack no encontrado")
-            raise HTTPException(status_code=404, detail="Pack no encontrado")
+            return None
         logger.info("Pack recuperado con éxito")
         return result
     except SQLAlchemyError as e:

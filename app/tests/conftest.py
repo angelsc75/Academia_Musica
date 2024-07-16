@@ -96,11 +96,9 @@ def pack_instrument(db_session, pack, instrument):
 	}
 
 @pytest.fixture
-def inscription(db_session, student, level, pack_instrument):
-	obj_student = create_student(db_session, student)
+def inscription(db_session, level, pack_instrument):
 	obj_level = create_level(db_session, **level)
 	return {
-		"student_id": obj_student.id,
 		"level_id": obj_level.id,
-		"registration_date": date.today(),
+		"registration_date": "2024-03-12",
 	}

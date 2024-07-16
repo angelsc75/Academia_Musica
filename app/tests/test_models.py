@@ -1,4 +1,4 @@
-from models import Teacher, Student, Instrument, Level
+from models import Teacher, Student, Instrument, Level, Pack
 
 '''Tests
 client: fixture que permite hacer las peticiones http.
@@ -221,7 +221,7 @@ def test_level_get_all(client, instrument, db_session):
 
 def test_level_update(client, level):
 	client.post("/levels/", json=level)
-	res = client.put("/levels/1", json={'level': "Intermedio"})
+	res = client.put("/levels/1", json={'level': "Intermedio", 'instruments_id': 1})
 	assert res.status_code == 200, f"Error, expected:200, not:{res.status_code}"
 	data = res.json()
 	assert data["level"] == "Intermedio", "Error update data"
@@ -234,51 +234,52 @@ def test_level_delete(client, level):
 	assert res.status_code == 404, "Error delete data"
 
 '''Tests for packs'''
-# def test_pack_create_get(client, pack):
-# 	res = client.post("/packs/", json=Level)
-# 	assert res.status_code == 200, f"Error in post, expect: 200, not: {res.status_code}"
-# 	res = client.get("/packs/1")
-# 	assert res.status_code == 200, f"Error in get, expect: 200, not: {res.status_code}"
-# 	data = res.json()
-# 	assert data["instruments_id"] == 1
-# 	assert data["Level"] == Level["Level"]
+def test_pack_create_get(client, pack):
+	res = client.post("/packs/", json=pack)
+	assert res.status_code == 200, f"Error in post, expect: 200, not: {res.status_code}"
+	res = client.get("/packs/1")
+	assert res.status_code == 200, f"Error in get, expect: 200, not: {res.status_code}"
+	data = res.json()
+	for t in pack.items():
+		assert t in data.items(), f"Error with data: {t}"
 
-# def test_pack_duplicate_data_fail(client, Level):
-# 	client.post("/packs/", json=Level)
-# 	res = client.post("/packs/", json=Level)
-# 	assert res.status_code == 400
+def test_pack_duplicate_data_fail(client, pack):
+	client.post("/packs/", json=pack)
+	res = client.post("/packs/", json=pack)
+	assert res.status_code == 400
 
-# def test_pack_get_fail(client):
-# 	res = client.get("/packs/1")
-# 	assert res.status_code == 404
+def test_pack_get_fail(client):
+	res = client.get("/packs/1")
+	assert res.status_code == 404
 
-# def test_pack_get_all(client, instrument, db_session):
-# 	instr = client.post("/instruments/", json=instrument).json()
-# 	for i in range(3):
-# 		Level = Level(instruments_id=instr["id"], Level="Test" + str(i))
-# 		db_session.add(Level)
-# 		db_session.commit()
-# 	res = client.get("/packs/")
-# 	assert res.status_code == 200, f"Error, expected:200, not:{res.status_code}"
-# 	data = res.json()
-# 	assert len(data) == 3, f"Error, expected quantity: 3, not: {len(data)}"
+def test_pack_get_all(client, pack, db_session):
+	for i in range(3):
+		pack = Pack(pack="Test"+str(i), discount_1= 20, discount_2=25)
+		db_session.add(pack)
+		db_session.commit()
+	res = client.get("/packs/")
+	assert res.status_code == 200, f"Error, expected:200, not:{res.status_code}"
+	data = res.json()
+	assert len(data) == 3, f"Error, expected quantity: 3, not: {len(data)}"
 
-# def test_pack_update(client, Level):
-# 	client.post("/packs/", json=Level)
-# 	res = client.put("/packs/1", json={'Level': "Intermedio"})
-# 	assert res.status_code == 200, f"Error, expected:200, not:{res.status_code}"
-# 	data = res.json()
-# 	assert data["Level"] == "Intermedio", "Error update data"
+def test_pack_update(client, pack):
+	client.post("/packs/", json=pack)
+	res = client.put("/packs/1", json={'pack': "Pack 2", 'discount_1': 25, 'discount_2': 40})
+	assert res.status_code == 200, f"Error, expected:200, not:{res.status_code}"
+	data = res.json()
+	assert data["pack"] == "Pack 2", "Error update data"
 
-# def test_pack_delete(client, Level):
-# 	client.post("/packs/", json=Level)
-# 	res = client.delete("/packs/1")
-# 	assert res.status_code == 200, f"Error, expected:200, not:{res.status_code} {res.content}"
-# 	res = client.get("/packs/1")
-# 	assert res.status_code == 404, "Error delete data"
+def test_pack_delete(client, pack):
+	client.post("/packs/", json=pack)
+	res = client.delete("/packs/1")
+	assert res.status_code == 200, f"Error, expected:200, not:{res.status_code} {res.content}"
+	res = client.get("/packs/1")
+	assert res.status_code == 404, "Error delete data"
 
 '''Tests for inscriptions'''
-def test_inscriptions_create_get(client, inscription):
+def test_inscriptions_create_get(client, inscription, student):
+	new_student = client.post("/students/", json=student).json()
+	inscription["student_id"] = new_student["id"]
 	res = client.post("/inscriptions/", json=inscription)
 	assert res.status_code == 200, f"Error in post, expect: 200, not: {res.status_code}"
 	res = client.get("/inscriptions/1")
@@ -291,9 +292,11 @@ def test_inscriptions_get_fail(client):
 	res = client.get("/inscriptions/1")
 	assert res.status_code == 404
 
-def test_inscriptions_delete(client, inscription):
-	client.post("/inscriptions/", json=inscription)
-	res = client.delete("/inscriptions/1")
+def test_inscriptions_delete(client, inscription, student):
+	new_student = client.post("/students/", json=student).json()
+	inscription["student_id"] = new_student["id"]
+	res = client.post("/inscriptions/", json=inscription)
+	client.delete("/inscriptions/1")
 	assert res.status_code == 200, f"Error, expected:200, not:{res.status_code} {res.content}"
 	res = client.get("/inscriptions/1")
 	assert res.status_code == 404, "Error delete data"
