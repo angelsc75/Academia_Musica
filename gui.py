@@ -10,6 +10,7 @@ from sqlalchemy.exc import TimeoutError
 from sqlalchemy import text
 
 
+
 # Import your models and schemas
 from models import Base, Student, Teacher, Instrument, Level, Pack, Inscription, PacksInstruments, TeachersInstruments
 from schemas import StudentCreate, InscriptionCreate
