@@ -17,6 +17,13 @@ logger = logging.getLogger("music_app")
 
 # Crear un nuevo instrumento
 def create_instrument(db: Session, name: str, price: Decimal) -> Instrument:
+    # Comprobar si el instrumento ya existe
+    existing_instrument = db.query(Instrument).filter((Instrument.name) == (name).lower()).first()
+    if existing_instrument:
+        logger.warning(f"Intento de crear un instrumento que ya existe: {name}")
+        raise HTTPException(status_code=400, detail=f"Ya existe un instrumento con el nombre '{name}'")
+
+    # Crear el nuevo instrumento
     new_instrument = Instrument(name=name, price=price)
     db.add(new_instrument)
     

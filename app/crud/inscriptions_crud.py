@@ -37,7 +37,7 @@ def create_inscription(db: Session, inscription: InscriptionCreate):
     # Comprueba si la inscripción ya existe.
     existing_inscription = db.query(Inscription).filter(
         Inscription.student_id == inscription.student_id,
-        Inscription.level_id == inscription.level_id,
+        Inscription.level_id == inscription.level_id
        
     ).first()
     
