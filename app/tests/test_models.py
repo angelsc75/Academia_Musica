@@ -233,6 +233,49 @@ def test_level_delete(client, level):
 	res = client.get("/levels/1")
 	assert res.status_code == 404, "Error delete data"
 
+'''Tests for packs'''
+# def test_pack_create_get(client, pack):
+# 	res = client.post("/packs/", json=Level)
+# 	assert res.status_code == 200, f"Error in post, expect: 200, not: {res.status_code}"
+# 	res = client.get("/packs/1")
+# 	assert res.status_code == 200, f"Error in get, expect: 200, not: {res.status_code}"
+# 	data = res.json()
+# 	assert data["instruments_id"] == 1
+# 	assert data["Level"] == Level["Level"]
+
+# def test_pack_duplicate_data_fail(client, Level):
+# 	client.post("/packs/", json=Level)
+# 	res = client.post("/packs/", json=Level)
+# 	assert res.status_code == 400
+
+# def test_pack_get_fail(client):
+# 	res = client.get("/packs/1")
+# 	assert res.status_code == 404
+
+# def test_pack_get_all(client, instrument, db_session):
+# 	instr = client.post("/instruments/", json=instrument).json()
+# 	for i in range(3):
+# 		Level = Level(instruments_id=instr["id"], Level="Test" + str(i))
+# 		db_session.add(Level)
+# 		db_session.commit()
+# 	res = client.get("/packs/")
+# 	assert res.status_code == 200, f"Error, expected:200, not:{res.status_code}"
+# 	data = res.json()
+# 	assert len(data) == 3, f"Error, expected quantity: 3, not: {len(data)}"
+
+# def test_pack_update(client, Level):
+# 	client.post("/packs/", json=Level)
+# 	res = client.put("/packs/1", json={'Level': "Intermedio"})
+# 	assert res.status_code == 200, f"Error, expected:200, not:{res.status_code}"
+# 	data = res.json()
+# 	assert data["Level"] == "Intermedio", "Error update data"
+
+# def test_pack_delete(client, Level):
+# 	client.post("/packs/", json=Level)
+# 	res = client.delete("/packs/1")
+# 	assert res.status_code == 200, f"Error, expected:200, not:{res.status_code} {res.content}"
+# 	res = client.get("/packs/1")
+# 	assert res.status_code == 404, "Error delete data"
 
 '''Tests for inscriptions'''
 def test_inscriptions_create_get(client, inscription):
