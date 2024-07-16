@@ -11,7 +11,7 @@ class Settings(BaseSettings):
 
     DATABASE_URL: str
 
+    class Config: str ="mysql+mysqlconnector://root:Luis.123@localhost:3306/escuela_musica"
     class Config:
         env_file = ".env"
-
 settings = Settings()

@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from models import Base
-
+from core.config import settings
 load_dotenv()
 
 # Create the database and tables
