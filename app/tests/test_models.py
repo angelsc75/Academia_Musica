@@ -107,7 +107,15 @@ def test_student_create_get(client, student):
 
 def test_student_duplicate_data_fail(client, student):
 	client.post("/students/", json=student)
-	res = client.post("/students/", json=student)
+	student_2 = {
+		"first_name": "Mica2", 
+		"last_name": "Test",
+		"age": 30,
+		"phone": "600090000", 
+		"mail":"mica22.test@gmail.com",
+		"family_id": False
+	}
+	res = client.post("/students/", json=student_2)
 	assert res.status_code == 400
 
 def test_student_get_fail(client):
@@ -131,12 +139,20 @@ def test_student_get_all(client, db_session):
 
 def test_student_update(client, student):
 	client.post("/students/", json=student)
-	res = client.put("/students/1", json={'phone': '555555559'})
+	new_student = {
+		"first_name": "Mica2", 
+		"last_name": "Test",
+		"age": 30,
+		"phone": "600090000", 
+		"mail":"mica22.test@gmail.com",
+		"family_id": False
+	}
+	res = client.put("/students/1", json=new_student)
 	assert res.status_code == 200, f"Error, expected:200, not:{res.status_code}"
 	data = res.json()
 	print(data)
 	assert data["first_name"] == student["first_name"]
-	assert data["phone"] == '555555559', "Error update data"
+	assert data["phone"] == '600090000', "Error update data"
 
 def test_student_delete(client, student):
 	client.post("/students/", json=student)
@@ -175,10 +191,10 @@ def test_instrument_get_all(client, db_session):
 
 def test_instrument_update(client, instrument):
 	client.post("/instruments/", json=instrument)
-	res = client.put("/instruments/1", json={'price': 30})
+	res = client.put("/instruments/1", json={'name': 'Piano2', 'price': 30})
 	assert res.status_code == 200, f"Error, expected:200, not:{res.status_code}"
 	data = res.json()
-	assert data["price"] == 30, "Error update data"
+	assert data["name"] == 'Piano2', "Error update data"
 
 def test_instrument_delete(client, instrument):
 	client.post("/instruments/", json=instrument)
