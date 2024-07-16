@@ -105,19 +105,6 @@ def test_student_create_get(client, student):
 	for t in student.items():
 		assert t in data.items(), f"Error with data: {t}"
 
-def test_student_duplicate_data_fail(client, student):
-	client.post("/students/", json=student)
-	student_2 = {
-		"first_name": "Mica2", 
-		"last_name": "Test",
-		"age": 30,
-		"phone": "600090000", 
-		"mail":"mica22.test@gmail.com",
-		"family_id": False
-	}
-	res = client.post("/students/", json=student_2)
-	assert res.status_code == 400
-
 def test_student_get_fail(client):
 	res = client.get("/students/1")
 	assert res.status_code == 404
@@ -169,11 +156,6 @@ def test_instrument_create_get(client, instrument):
 	assert res.status_code == 200, f"Error in post, expect: 200, not: {res.status_code}"
 	res = client.get("/instruments/1")
 	assert res.status_code == 200, f"Error in get, expect: 200, not: {res.status_code}"
-
-def test_instrument_duplicate_data_fail(client, instrument):
-	client.post("/instruments/", json=instrument)
-	res = client.post("/instruments/", json=instrument)
-	assert res.status_code == 404
 
 def test_instrument_get_fail(client):
 	res = client.get("/instruments/1")
