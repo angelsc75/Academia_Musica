@@ -25,6 +25,8 @@ Para instalar y ejecutar el proyecto localmente, sigue estos pasos:
 
 ## Estructura de la base de datos
 
+![Diagrama](https://github.com/user-attachments/assets/0d34f9c6-c4e2-418d-a48d-d724948ac964)
+
 La base de datos está estructurada en los siguientes modelos:
 
 - **Student**: Representa a los estudiantes, incluyendo atributos como nombre, apellido, edad, teléfono y correo electrónico.
