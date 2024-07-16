@@ -27,12 +27,7 @@ def create_inscription(db: Session, inscription: InscriptionCreate):
         logger.warning("Estudiante no encontrado")
         raise HTTPException(status_code=404, detail="Estudiante no encontrado")
 
-    # Comprobar si exite el instrumento
-    instrument = db.query(Instrument).filter(Instrument.id == inscription.instrument_id).first()
-    if not instrument:
-        logger.warning("Instrumento no encontrado")
-        raise HTTPException(status_code=404, detail="Instrumento no encontrado")
-
+  
     # Comprobar si exite el nivel
     level = db.query(Level).filter(Level.id == inscription.level_id).first()
     if not level:
@@ -43,7 +38,7 @@ def create_inscription(db: Session, inscription: InscriptionCreate):
     existing_inscription = db.query(Inscription).filter(
         Inscription.student_id == inscription.student_id,
         Inscription.level_id == inscription.level_id,
-        Inscription.instrument_id == inscription.instrument_id
+       
     ).first()
     
     if existing_inscription:
