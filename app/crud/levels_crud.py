@@ -1,8 +1,9 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-
 from models import Level, Instrument
+from fastapi import APIRouter
 
+router = APIRouter()
 def get_level(db: Session, level_id: int):
     stmt = select(Level).where(Level.id == level_id)
     result = db.scalars(stmt).first()

@@ -1,16 +1,21 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-from app import schemas
-from app import crud
-from app.core import security
-from app.core.security import create_access_token, decode_access_token, oauth2_scheme
+from crud import inscriptions_crud
+from crud import levels_crud
+from crud import packs_crud
+from crud import teacher_instruments_crud
+from crud import pack_instruments_crud
+import schemas
+import crud
+from core import security
+from core.security import create_access_token, decode_access_token, oauth2_scheme
 from crud import auth
 from models import Student
 from schemas import Token
 from sqlalchemy.orm import Session
 from typing import List
 from decimal import Decimal
-from app.db import get_db
+from db import get_db
 from crud.inscriptions_crud import create_inscription, delete_inscription, get_inscriptions, get_inscription, get_inscriptions_by_student, calculate_student_fees, generate_fee_report,update_inscription
 from crud.students_crud import get_students, create_student, delete_student, update_student, get_student
 from crud import teacher_crud, instruments_crud, students_crud
@@ -27,10 +32,15 @@ from schemas import Student, StudentCreate, Inscription, InscriptionCreate, Insc
 
 
 api_router = APIRouter()
-api_router.include_router(auth.router, tags=["auth"])
-api_router.include_router(Student.router, prefix="/students", tags=["students"])
-api_router.include_router(teacher.router, prefix="/teachers", tags=["teachers"])
-api_router.include_router(instrument.router, prefix="/instruments", tags=["instruments"])
+api_router.include_router(auth.router, tags=["authentication"])
+api_router.include_router(students_crud.router, prefix="/students", tags=["students"])
+api_router.include_router(teacher_crud.router, prefix="/teachers", tags=["teachers"])
+api_router.include_router(instruments_crud.router, prefix="/instruments", tags=["instruments"])
+api_router.include_router(inscriptions_crud.router, prefix="/inscriptions", tags=["inscriptions"])
+api_router.include_router(levels_crud.router, prefix="/levels", tags=["levels"])
+api_router.include_router(packs_crud.router, prefix="/packs", tags=["packs"])
+api_router.include_router(teacher_instruments_crud.router, prefix="/teacher-instruments", tags=["teacher_instruments"])
+api_router.include_router(pack_instruments_crud.router, prefix="/pack-instruments", tags=["pack_instruments"])
 
 
 

@@ -2,6 +2,10 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from models import PacksInstruments
+from fastapi import APIRouter
+
+
+router = APIRouter()
 # Listar un paquete de instrumentos
 def get_pack_instruments(db: Session, packs_instruments_id: int):
     stmt = select(PacksInstruments).where(PacksInstruments.id == packs_instruments_id)

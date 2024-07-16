@@ -2,6 +2,10 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from models import Pack
+from fastapi import APIRouter
+
+
+router = APIRouter()
 
 def get_pack(db: Session, pack_id: int):
     stmt = select(Pack).where(Pack.id == pack_id)

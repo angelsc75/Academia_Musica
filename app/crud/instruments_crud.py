@@ -3,8 +3,10 @@ from sqlalchemy.exc import IntegrityError
 from decimal import Decimal
 from typing import List, Optional
 from models import Instrument, Pack, Teacher
+from fastapi import APIRouter
 
 
+router = APIRouter()
 def create_instrument(db: Session, name: str, price: Decimal) -> Instrument:
     # Crear una nueva instancia de Instrument
     new_instrument = Instrument(name=name, price=price)

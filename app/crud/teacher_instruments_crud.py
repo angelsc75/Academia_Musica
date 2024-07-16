@@ -2,7 +2,10 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from models import TeachersInstruments, Instrument, Teacher
+from fastapi import APIRouter
 
+
+router = APIRouter()
 def get_teacher_instruments(db: Session, teachers_instruments_id: int):
     stmt = select(TeachersInstruments).where(TeachersInstruments.id == teachers_instruments_id)
     result = db.scalars(stmt).first()

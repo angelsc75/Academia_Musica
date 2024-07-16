@@ -7,6 +7,10 @@ from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
 import logging
 from sqlalchemy import func
+from fastapi import APIRouter
+
+
+router = APIRouter()
 
 def create_inscription(db: Session, inscription: InscriptionCreate):
     db_inscription = Inscription(**inscription.dict())

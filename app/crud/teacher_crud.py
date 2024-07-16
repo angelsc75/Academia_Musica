@@ -1,8 +1,9 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-
 from models import Teacher
+from fastapi import APIRouter
 
+router = APIRouter()
 
 def get_teacher(db: Session, teacher_id: int):
 	stmt = select(Teacher).where(Teacher.id == teacher_id)
