@@ -41,4 +41,8 @@ python-jose[cryptography]
 passlib[bcrypt]
 python-multipart
 pydantic-settings
-itsdangerous
+itsdangerousa
+alembic
+mysqlclient
+sqlalchemy alembic
+bcrypt
