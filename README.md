@@ -110,17 +110,23 @@ Para desplegar la aplicación en un entorno de producción, se utiliza Uvicorn c
 
 
 ## Tecnologías empleadas
-![python](https://github.com/user-attachments/assets/87934ab9-f98b-49e6-b2d0-fcc97517f9da)
-![fastapi](https://github.com/user-attachments/assets/1f0cefb5-72d5-4700-82ba-fb0c44e0b3a0)
-![sqlAlchemy2](https://github.com/user-attachments/assets/8cfe2f0f-18fc-4f7f-92ca-278cd697fb07)
-![sqlite2](https://github.com/user-attachments/assets/83e5c083-a03e-4dd2-a480-1d71feec68a0)
-![mysql2](https://github.com/user-attachments/assets/0d3e55cd-d4d8-4dee-ad3e-883d24eb7220)
-![uvicorn2](https://github.com/user-attachments/assets/06a3f0f0-5a3b-4864-b49d-b2cecde22f08)
-![pytest2](https://github.com/user-attachments/assets/8b150301-d11d-4a20-a361-6b89c4a0dccf)
-![docke](https://github.com/user-attachments/assets/64421d38-581b-4f8b-b607-91e72ab8b225)
-![streamlit](https://github.com/user-attachments/assets/49fc5241-f912-4d0d-8f1a-ce932a9cee15)
-![github2](https://github.com/user-attachments/assets/94c28d85-40bf-4c98-8bb4-7cc2e745fb56) 
-![trello2](https://github.com/user-attachments/assets/c03484d1-b1a8-41f8-b845-df4f810421ec)
+![python](https://github.com/user-attachments/assets/268d8461-5957-42e8-a051-0526b44a6dbe)
+![mysql2](https://github.com/user-attachments/assets/abbbb085-e538-4d15-90b0-a98609e9d42c)
+
+![fastapi](https://github.com/user-attachments/assets/459f92f9-7758-4011-a5a6-08df65c8b685)
+![sqlAlchemy2](https://github.com/user-attachments/assets/2a412693-98a9-4e0c-a785-4368e5181b80)
+![uvicorn2](https://github.com/user-attachments/assets/380288af-dab7-4364-99e2-6abde4c1e7e3)
+
+![streamlit](https://github.com/user-attachments/assets/890b99fa-009a-4cb3-bfa1-ef681ee214c6)
+
+![pytest2](https://github.com/user-attachments/assets/1cd59921-14ce-4230-b22d-99f6865081dc)
+![sqlite2](https://github.com/user-attachments/assets/acc5ba5f-a357-4677-a4da-e3eb32f4d10c)
+
+![docke](https://github.com/user-attachments/assets/fb06b980-57d9-4d09-84dc-db23270aad3e)
+
+![github2](https://github.com/user-attachments/assets/9811b1fb-9817-4b1d-994f-5afc6cdde005)
+![trello2](https://github.com/user-attachments/assets/fbbcd782-0999-4d3c-84df-5657d44f7e57)
+
 
 
 ## Autores
