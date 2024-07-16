@@ -20,6 +20,18 @@ logger = logging.getLogger("music_app")
 # Crear un nuevo estudiante
 def create_student(db: Session, student: StudentCreate):
     try:
+        # Comprobar si ya existe un estudiante con el mismo nombre y apellido
+        existing_student = db.query(Student).filter(
+            Student.first_name == (student.first_name).lower(),
+            Student.last_name == (student.last_name).lower(),
+            Student.age == student.age
+        ).first()
+        
+        if existing_student:
+            logger.warning(f"Intento de crear un estudiante que ya existe: {student.first_name} {student.last_name}")
+            raise HTTPException(status_code=400, detail=f"Ya existe un estudiante con el nombre '{student.first_name}' y apellido '{student.last_name}', con '{student.age}' años")
+
+        # Crear el nuevo estudiante
         db_student = Student(**student.model_dump())
         db.add(db_student)
         db.commit()
