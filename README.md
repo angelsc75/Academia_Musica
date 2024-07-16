@@ -3,7 +3,8 @@
 
 ## Introducción 
 
-Este proyecto es una API para la gestión de una escuela de música, diseñada para manejar estudiantes, profesores, instrumentos, niveles de aprendizaje y paquetes de instrumentos. La API está construida con FastAPI y SQLAlchemy, proporcionando endpoints para realizar operaciones CRUD (crear, leer, actualizar y eliminar) sobre los diferentes modelos de datos.
+Este proyecto es una API para la gestión de una escuela de música, diseñada para manejar estudiantes, profesores, instrumentos, niveles de aprendizaje y paquetes de instrumentos. 
+La API está construida con FastAPI y SQLAlchemy, proporcionando endpoints para realizar operaciones CRUD (crear, leer, actualizar y eliminar) sobre los diferentes modelos de datos.
 
 ## Características principales
 
@@ -48,12 +49,12 @@ La base de datos está estructurada en los siguientes modelos:
 
 ## Modelos de datos
 
-Los modelos de datos están definidos en el archivo `models.py` utilizando SQLAlchemy. Cada modelo incluye relaciones y atributos específicos, como se detalla a continuación:
+Los modelos de datos están definidos en el archivo `models.py` utilizando SQLAlchemy. 
 
 
 ## API REST
 
-La API REST ofrece varios endpoints para interactuar con los diferentes modelos de datos. Aquí se describen algunos de los principales endpoints:
+La API REST ofrece varios endpoints para interactuar con los diferentes modelos de datos. Se describen algunos de los principales endpoints:
 
 ### Endpoints de Profesores
 - Crear un profesor
@@ -81,12 +82,15 @@ La API REST ofrece varios endpoints para interactuar con los diferentes modelos 
 
 ## Cálculo de Tarifas
 
-La API permite calcular las tarifas de las clases para un estudiante en función de sus inscripciones a diferentes niveles de instrumentos. Se tienen en cuenta posibles descuentos según el nivel y el instrumento. La información sobre las tarifas y descuentos se envía en la solicitud, y la respuesta proporciona el desglose y el total de la tarifa.
+La API permite calcular las tarifas de las clases para un estudiante en función de sus inscripciones a diferentes niveles de instrumentos. 
+Se tienen en cuenta posibles descuentos según el nivel y el instrumento. 
  
 ## Interfaz Gráfica
 
-Se ha desarrollado una interfaz gráfica utilizando Streamlit para facilitar la gestión de los datos de la escuela de música. Esta interfaz permite realizar operaciones CRUD de manera interactiva y amigable.
-Ejecución de la Interfaz Gráfica
+Se ha desarrollado una interfaz gráfica utilizando Streamlit para facilitar la gestión de los datos de la escuela de música. 
+Esta interfaz permite realizar operaciones CRUD de manera interactiva y amigable.
+
+**Ejecución de la Interfaz Gráfica**
 
 Para ejecutar la interfaz gráfica, utiliza el siguiente comando: **streamlit run gui_test.py**
 
@@ -104,7 +108,8 @@ La interfaz gráfica permite:
   
 ## Pruebas
 
-Las pruebas están diseñadas para garantizar que todos los endpoints y operaciones de la base de datos funcionen correctamente. Se utilizan fixtures para configurar el entorno de pruebas y los datos necesarios. Los tests están ubicados en el directorio `tests`.
+Las pruebas están diseñadas para garantizar que todos los endpoints y operaciones de la base de datos funcionen correctamente. 
+Se utilizan fixtures para configurar el entorno de pruebas y los datos necesarios. Los tests están ubicados en el directorio `tests`.
 
 Para ejecutar las pruebas, utiliza el siguiente comando: **pytest**
 
