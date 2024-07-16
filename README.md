@@ -20,11 +20,18 @@ Este proyecto es una API para la gestión de una escuela de música, diseñada p
 
 Para instalar y ejecutar el proyecto localmente, sigue estos pasos:
 
-1. Clona el repositorio:
-2. Crea un entorno virtual y activa:
-3. Instala las dependencias:
-4. Configura la base de datos y ejecuta la aplicación:
+1. Clona el repositorio
+2. Crea un entorno virtual y activa
+3. Instala las dependencias
+4. Configura la base de datos MySQL y ejecuta la aplicación
 
+## Configuración de la base de datos MySQL
+
+Asegúrate de tener MySQL instalado y en funcionamiento. Luego, sigue estos pasos para configurar la base de datos:
+
+1. Inicia sesión en MySQL
+2. Crea una nueva base de datos
+3. Actualiza el archivo db.py con las credenciales de tu base de datos
 
 ## Estructura de la base de datos
 
@@ -49,27 +56,27 @@ Los modelos de datos están definidos en el archivo `models.py` utilizando SQLAl
 La API REST ofrece varios endpoints para interactuar con los diferentes modelos de datos. Aquí se describen algunos de los principales endpoints:
 
 ### Endpoints de Profesores
-- **Crear un profesor**
-- **Obtener un profesor por ID**
-- **Listar todos los profesores**
+- Crear un profesor
+- Obtener un profesor por ID
+- Listar todos los profesores
 
 ### Endpoints de Estudiantes
-- **Crear un estudiante**
-  **Obtener un estudiante por ID**
-- **Listar todos los estudiantes**
+- Crear un estudiante
+- Obtener un estudiante por ID
+- Listar todos los estudiantes
 
 ### Endpoints de Instrumentos
-- **Crear un instrumento**
-- **Obtener un instrumento por ID**
-- **Listar todos los instrumentos**
+- Crear un instrumento
+- Obtener un instrumento por ID
+- Listar todos los instrumentos
  
  ### Endpoints de Inscripciones
-- **Crear una inscripción**
-- **Obtener una inscripción por ID**
+- Crear una inscripción
+- Obtener una inscripción por ID
 
 ### Endpoints de Cálculo de Tarifas y Facturación
-- **Calcular tarifa de clases para un estudiante**
-- **Generar factura para un estudiante**
+- Calcular tarifa de clases para un estudiante
+- Generar factura para un estudiante
 
 ## Interfaz Gráfica
 
@@ -126,7 +133,6 @@ Para desplegar la aplicación en un entorno de producción, se utiliza Uvicorn c
 
 ![github2](https://github.com/user-attachments/assets/9811b1fb-9817-4b1d-994f-5afc6cdde005)
 ![trello2](https://github.com/user-attachments/assets/fbbcd782-0999-4d3c-84df-5657d44f7e57)
-
 
 
 ## Autores
