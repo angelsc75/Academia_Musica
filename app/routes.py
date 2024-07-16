@@ -27,7 +27,10 @@ router = APIRouter()
 
 @router.post("/students/", response_model=Student, tags=["students"])
 def create_students(student: StudentCreate, db: Session = Depends(get_db)):
-    return create_student(db=db, student=student)
+    db_student = create_student(db=db, student=student)
+    if db_student is None:
+        raise HTTPException(status_code=400, detail=f"Ya existe un estudiante con el nombre '{student.first_name}' y apellido '{student.last_name}', con '{student.age}' años")
+    return db_student
 
 @router.get("/students/{student_id}", response_model=Student, tags=["students"])
 def read_student(student_id: int, db: Session = Depends(get_db)):

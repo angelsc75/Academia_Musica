@@ -108,7 +108,7 @@ def test_student_create_get(client, student):
 def test_student_duplicate_data_fail(client, student):
 	client.post("/students/", json=student)
 	res = client.post("/students/", json=student)
-	assert res.status_code == 404
+	assert res.status_code == 400
 
 def test_student_get_fail(client):
 	res = client.get("/students/1")

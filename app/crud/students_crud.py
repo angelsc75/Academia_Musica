@@ -29,7 +29,7 @@ def create_student(db: Session, student: StudentCreate):
         
         if existing_student:
             logger.warning(f"Intento de crear un estudiante que ya existe: {student.first_name} {student.last_name}")
-            raise HTTPException(status_code=400, detail=f"Ya existe un estudiante con el nombre '{student.first_name}' y apellido '{student.last_name}', con '{student.age}' años")
+            return None
 
         # Crear el nuevo estudiante
         db_student = Student(**student.model_dump())
