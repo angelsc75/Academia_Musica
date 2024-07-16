@@ -78,6 +78,11 @@ La API REST ofrece varios endpoints para interactuar con los diferentes modelos 
 - Calcular tarifa de clases para un estudiante
 - Generar factura para un estudiante
 
+
+## Cálculo de Tarifas
+
+La API permite calcular las tarifas de las clases para un estudiante en función de sus inscripciones a diferentes niveles de instrumentos. Se tienen en cuenta posibles descuentos según el nivel y el instrumento. La información sobre las tarifas y descuentos se envía en la solicitud, y la respuesta proporciona el desglose y el total de la tarifa.
+ 
 ## Interfaz Gráfica
 
 Se ha desarrollado una interfaz gráfica utilizando Streamlit para facilitar la gestión de los datos de la escuela de música. Esta interfaz permite realizar operaciones CRUD de manera interactiva y amigable.
@@ -115,6 +120,9 @@ El sistema implementa un control de acceso basado en roles, con los siguientes r
 
 Para desplegar la aplicación en un entorno de producción, se utiliza Uvicorn con un servidor ASGI: **uvicorn  main:app --reload**
 
+## Dockerización de la Aplicación
+
+Para facilitar el despliegue y la ejecución de la aplicación, se ha dockerizado utilizando Docker.
 
 ## Tecnologías empleadas
 ![python](https://github.com/user-attachments/assets/268d8461-5957-42e8-a051-0526b44a6dbe)
