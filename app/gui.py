@@ -13,6 +13,7 @@ from PIL import Image
 import base64
 from typing import List, Tuple
 import hashlib
+import logging
 
 
 # Importar  modelos y schemas
@@ -26,6 +27,9 @@ from crud.inscriptions_crud import (create_inscription, get_inscriptions, delete
 
 # Cargar variables de entorno
 load_dotenv()
+
+# Obtener el logger configurado
+logger = logging.getLogger("music_app")
 
 # Conexión a la base de datos
 DATABASE_URL = os.environ['DATABASE_URL']
@@ -55,6 +59,7 @@ def db_operation(operation):
     except Exception as e:
         session.rollback()
         st.error(f"Ha ocurrido un error: {str(e)}")
+        logger.warning("Se ha producido un error")
         return None
 
 # Función para consultar la base de datos
