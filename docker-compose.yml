@@ -1,0 +1,52 @@
+version: '3'
+
+services:
+  db:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: jose123
+      MYSQL_DATABASE: music_school
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - app-network
+
+
+  admin:
+    image: phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: jose123
+    ports:
+      - 8080:80
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  app:
+    image: basedatos_api:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=mysql+mysqlconnector://root:jose123@db:3306/music_school
+    networks:
+      - app-network
+    
+
+volumes:
+  db-data:
+
+networks:
+  app-network:
+    driver: bridge
