@@ -92,7 +92,7 @@ Esta interfaz permite realizar operaciones CRUD de manera interactiva y amigable
 
 **Ejecución de la Interfaz Gráfica**
 
-Para ejecutar la interfaz gráfica, utiliza el siguiente comando: **streamlit run gui_test.py**
+Para ejecutar la interfaz gráfica, utiliza el siguiente comando: **streamlit run gui.py**
 
 ## Funcionalidades de la Interfaz Gráfica
 
