@@ -4,7 +4,7 @@
 ## Introducción 
 
 Este proyecto es una API para la gestión de una escuela de música, diseñada para manejar estudiantes, profesores, instrumentos, niveles de aprendizaje y paquetes de instrumentos. 
-La API está construida con FastAPI y SQLAlchemy, proporcionando endpoints para realizar operaciones CRUD (crear, leer, actualizar y eliminar) sobre los diferentes modelos de datos.
+La API está construida con FastAPI y SQLAlchemy, proporcionando endpoints para realizar operaciones CRUD (crear, leer, actualizar y eliminar) sobre los diferentes modelos de datos. 
 
 ## Características principales
 
