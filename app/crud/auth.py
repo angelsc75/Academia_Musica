@@ -10,7 +10,7 @@ from core.security import get_password_hash, verify_password
 
 router = APIRouter()
 
-# Your auth routes go here
+
 def get_user(db: Session, username: str):
     return db.query(User).filter(User.username == username).first()
 
@@ -48,9 +48,9 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-# @router.post("/users/", response_model=schemas.User)
-# def create_new_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-#     db_user = get_user(db, username=user.username)
-#     if db_user:
-#         raise HTTPException(status_code=400, detail="Username already registered")
-#     return create_user(db=db, user=user)
+@router.post("/users/", response_model=schemas.User)
+def create_new_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    db_user = get_user(db, username=user.username)
+    if db_user:
+        raise HTTPException(status_code=400, detail="Username already registered")
+    return create_user(db=db, user=user)
