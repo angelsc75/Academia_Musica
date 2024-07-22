@@ -249,24 +249,24 @@ def calculate_student_fees(db: Session, student_id: int) -> Decimal:
         student = db.query(Student).filter(Student.id == student_id).first()
         if not student:
             logger.warning("Estudiante no encontrado")
-            raise HTTPException(status_code=404, detail="Estudiante no encontrado")
-
-        # Retrieve inscriptions for the student
+            return None
+            
+        # Recupera las inscripciones del estudiante
         inscriptions = db.query(Inscription).filter(Inscription.student_id == student_id).all()
         if not inscriptions:
             logger.info("No se encontraron inscripciones para el estudiante")
             return Decimal('0.00')
-
+        #se inicializan dos variables, una para recoger el precio y otra para agrupar inscripciones por packs
         total_fee = Decimal('0.00')
         pack_inscriptions = {}
 
-        # Calcular tarifa por cada inscripción
+        # recoge el instrumento por cada inscripción. Para ello hay que llegar al precio, que está en la tabla instrumento
         for inscription in inscriptions:
             instrument = inscription.level.instrument
             if not instrument:
                 logger.warning("Instrumento no encontrado para la inscripción")
                 raise HTTPException(status_code=404, detail="Instrumento no encontrado")
-                
+        # recoge el pack al que pertenece cada instrumento        
             pack = db.query(Pack).join(PacksInstruments).filter(PacksInstruments.instrument_id == instrument.id).first()
             pack_id = pack.id if pack else None
 
