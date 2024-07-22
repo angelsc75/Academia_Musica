@@ -31,21 +31,29 @@ from schemas import Student, StudentCreate, Inscription, InscriptionCreate, Insc
 
 
 
-api_router = APIRouter()
-api_router.include_router(auth.router, tags=["authentication"])
-api_router.include_router(students_crud.router, prefix="/students", tags=["students"])
-api_router.include_router(teacher_crud.router, prefix="/teachers", tags=["teachers"])
-api_router.include_router(instruments_crud.router, prefix="/instruments", tags=["instruments"])
-api_router.include_router(inscriptions_crud.router, prefix="/inscriptions", tags=["inscriptions"])
-api_router.include_router(levels_crud.router, prefix="/levels", tags=["levels"])
-api_router.include_router(packs_crud.router, prefix="/packs", tags=["packs"])
-api_router.include_router(teacher_instruments_crud.router, prefix="/teacher-instruments", tags=["teacher_instruments"])
-api_router.include_router(pack_instruments_crud.router, prefix="/pack-instruments", tags=["pack_instruments"])
-
-
-
 router = APIRouter()
+#rutas para user
 
+@router.post("/users/", response_model=schemas.User)
+def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    db_user = crud.get_user_by_username(db, username=user.username)
+    if db_user:
+        raise HTTPException(status_code=400, detail="Username already registered")
+    return crud.create_user(db=db, user=user)
+
+@router.put("/users/{user_id}", response_model=schemas.User)
+def update_user(user_id: int, user: schemas.UserUpdate, db: Session = Depends(get_db)):
+    db_user = crud.get_user(db, user_id=user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return crud.update_user(db=db, user_id=user_id, user=user)
+
+@router.get("/users/{user_id}", response_model=schemas.User)
+def read_user(user_id: int, db: Session = Depends(get_db)):
+    db_user = crud.get_user(db, user_id=user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return db_user
 @router.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = auth.authenticate_user(db, form_data.username, form_data.password)
