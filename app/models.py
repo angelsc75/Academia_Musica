@@ -1,18 +1,26 @@
-from sqlalchemy import ForeignKey, DECIMAL, Date, Boolean, String, Integer, Column 
+from sqlalchemy import ForeignKey, DECIMAL, Date, Boolean, String, Integer, Column, Enum
 from sqlalchemy.orm import relationship, declarative_base, Mapped, mapped_column
 from typing import List
 from datetime import date
-
+from enum import Enum as PyEnum
 
 Base = declarative_base()
 
+class RoleEnum(PyEnum):
+    admin = "Admin"
+    gestor = "Gestor"
+
+# Modelo User modificado
 class User(Base):
     __tablename__ = 'users'
+
     id = mapped_column(Integer, primary_key=True, autoincrement=True)
     username = mapped_column(String(50), unique=True, nullable=False)
     hashed_password = mapped_column(String(300), nullable=False)
     is_active = Column(Boolean, default=True)
-    #email = mapped_column(String(50), nullable=False)
+    email = mapped_column(String(50), nullable=False)
+    role = Column(Enum(RoleEnum), nullable=False)  # Nuevo campo role
+    
 class Student(Base):
     __tablename__ = 'students'
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
