@@ -1,7 +1,8 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from decimal import Decimal
 from typing import Optional
 from datetime import date
+from enum import Enum
 
 class CreateTeacher(BaseModel):
 	first_name: str
@@ -163,15 +164,33 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     username: str | None = None
 
+# Definimos los roles de usuario
+class RoleEnum(str, Enum):
+    admin = "Admin"
+    gestor = "Gestor"
+
+# Esquema base para el usuario
 class UserBase(BaseModel):
     username: str
+    email: EmailStr
+    is_active: bool = True
+    role: RoleEnum
 
+# Esquema para crear un nuevo usuario
 class UserCreate(UserBase):
     password: str
 
+# Esquema para actualizar un usuario existente
+class UserUpdate(BaseModel):
+    username: Optional[str] = None
+    email: Optional[EmailStr] = None
+    is_active: Optional[bool] = None
+    password: Optional[str] = None
+    role: Optional[RoleEnum] = None
+
+# Esquema para leer un usuario
 class User(UserBase):
     id: int
-    is_active: bool
 
     class Config:
-        orm_mode = True
+        orm_mode: True
