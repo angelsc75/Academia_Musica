@@ -1,5 +1,6 @@
 
 # ![OIG1 CY](https://github.com/user-attachments/assets/2da18247-5927-4b7c-aa6b-38d59cb6f178)         Proyecto: API Escuela de Música                                        
+Nota: Este proyecto ha sido realizado como actividad grupal dentro del bootcamp de IA de Factoría F5 que tuvo lugar entre mayo de 2024 y marzo de 2025.
 
 ## Introducción 
 
