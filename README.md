@@ -154,3 +154,6 @@ Para facilitar el despliegue y la ejecución de la aplicación, se ha dockerizad
 - Jose Antonio Rodriguez
 - Luis Paez Bravo
 - Xiomara Torres
+## Enlace a presentación comercial
+[Ver presentación del proyecto (PDF)](assets/presentacion.pdf)
+
